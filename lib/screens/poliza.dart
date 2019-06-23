@@ -257,7 +257,7 @@ class _PolizaFormState extends State<PolizaForm> {
 
                       DateTimePickerFormField(
                         //firstDate: _fromDate1,
-                        initialDate: (_fromDate1 != null && periodoController.text  != null) ? DateTime(_fromDate1.year - int.parse(periodoController.text), _fromDate1.month, _fromDate1.day) : null,
+                        initialDate: (_fromDate1 != null && periodoController.text  != "") ? DateTime(_fromDate1.year - int.parse(periodoController.text), _fromDate1.month, _fromDate1.day) : DateTime.now(),
                         //initialValue: DateTime.parse(initialDate.text),
                         format: dateFormat,
                         enabled: true,
