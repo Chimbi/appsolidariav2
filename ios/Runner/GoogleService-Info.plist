@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>696435022099-8npsji9chenubpkn2nfomet5lt2i6q8t.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.696435022099-8npsji9chenubpkn2nfomet5lt2i6q8t</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDJ7aSN2n_-BPb3QYwnY6uRuTn_8bN06Nw</string>
+	<key>GCM_SENDER_ID</key>
+	<string>696435022099</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>co.com.creece.appsolidariav2</string>
+	<key>PROJECT_ID</key>
+	<string>appsolidaria</string>
+	<key>STORAGE_BUCKET</key>
+	<string>appsolidaria.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:696435022099:ios:31ccaf97976e11c1</string>
+	<key>DATABASE_URL</key>
+	<string>https://appsolidaria.firebaseio.com</string>
+</dict>
+</plist>
