@@ -4,7 +4,6 @@ import 'package:appsolidariav2/widgets/datetime.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
-import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 class PolizaForm extends StatefulWidget {
