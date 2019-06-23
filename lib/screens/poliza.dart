@@ -253,7 +253,7 @@ class _PolizaFormState extends State<PolizaForm> {
                       ),
                       DateTimePickerFormField(
                         //firstDate: _fromDate1,
-                        initialDate: (_fromDate1 != null && _user.periodo != null) ? DateTime(_fromDate1.year - _user.periodo, _fromDate1.month, _fromDate1.day) : null,
+                        initialDate: (_fromDate1 != null && _user.periodo  != null) ? DateTime(_fromDate1.year - _user.periodo, _fromDate1.month, _fromDate1.day) : null,
                         initialValue: (_fromDate1 != null && _user.periodo != null) ? DateTime(_fromDate1.year - _user.periodo, _fromDate1.month, _fromDate1.day) : null,
                         format: dateFormat,
                         enabled: true,
