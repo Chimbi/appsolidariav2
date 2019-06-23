@@ -150,7 +150,7 @@ class _PolizaFormState extends State<PolizaForm> {
                             return 'Please enter a valid type of business';
                           }
                         },
-                        items: typeNeg
+                        items: tipoNeg1
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -253,8 +253,8 @@ class _PolizaFormState extends State<PolizaForm> {
                       ),
                       DateTimePickerFormField(
                         //firstDate: _fromDate1,
-                        initialDate: (_fromDate1 != null && dropdownValue != null) ? DateTime(_fromDate1.year - int.parse(dropdownValue), _fromDate1.month, _fromDate1.day) : null,
-                        initialValue: (_fromDate1 != null && dropdownValue != null) ? DateTime(_fromDate1.year - int.parse(dropdownValue), _fromDate1.month, _fromDate1.day) : null,
+                        initialDate: (_fromDate1 != null && _user.periodo != null) ? DateTime(_fromDate1.year - _user.periodo, _fromDate1.month, _fromDate1.day) : null,
+                        initialValue: (_fromDate1 != null && _user.periodo != null) ? DateTime(_fromDate1.year - _user.periodo, _fromDate1.month, _fromDate1.day) : null,
                         format: dateFormat,
                         enabled: true,
                         dateOnly: true,
