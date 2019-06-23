@@ -35,7 +35,9 @@ class _PolizaFormState extends State<PolizaForm> {
 
   DateFormat dateFormat;//DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"); //DateFormat('dd-MM-yyyy'); DateFormat.yMMMd()
 
-  TextEditingController initialDate;
+  TextEditingController initialDate = TextEditingController();
+  TextEditingController prueba = TextEditingController();
+  TextEditingController periodoController = TextEditingController();
 
   List<String> typeNeg = [
     "One",
@@ -106,7 +108,7 @@ class _PolizaFormState extends State<PolizaForm> {
   @override
   void initState() {
     initializeDateFormatting();
-    dateFormat = new DateFormat.yMMMMd('es'); //new DateFormat('dd-MM-yyyy','es');
+    //dateFormat = new DateFormat.yMMMMd('es'); //new DateFormat('dd-MM-yyyy','es');
     minDate = DateTime(_fromDate.year - 1, _fromDate.month, _fromDate.day);
     super.initState();
   }
@@ -142,6 +144,7 @@ class _PolizaFormState extends State<PolizaForm> {
                         onChanged: (String newValue) {
                           setState(() {
                             dropdownValue = newValue;
+                            prueba.text = newValue;
                           });
                         },
                         validator: (String value) {
@@ -190,6 +193,7 @@ class _PolizaFormState extends State<PolizaForm> {
                         onSaved: (val) => setState(() => _user.name = val),
                       ),
                       TextFormField(
+                        controller: periodoController,
                         decoration: InputDecoration(labelText: 'Periodo'),
                         validator: (value) {
                           if (value.isEmpty) {
@@ -228,7 +232,8 @@ class _PolizaFormState extends State<PolizaForm> {
                       ),
 */
                       DateTimePickerFormField(
-                        format: dateFormat,
+                        controller: initialDate,
+                        //format: dateFormat,
                         enabled: true,
                         dateOnly: true,
                         validator: (value) {
@@ -241,7 +246,6 @@ class _PolizaFormState extends State<PolizaForm> {
                         onChanged: (DateTime date) {
                           setState(() {
                             _fromDate1 = date;
-                            build(context);
                           });
                         },
                         onFieldSubmitted: (DateTime date) {
@@ -250,10 +254,13 @@ class _PolizaFormState extends State<PolizaForm> {
                           });
                         },
                       ),
+                      SizedBox(width: 10.2,),
+                      Text("${initialDate.text}"),
+                      /*
                       DateTimePickerFormField(
                         //firstDate: _fromDate1,
-                        initialDate: (_fromDate1 != null && _user.periodo  != null) ? DateTime(_fromDate1.year - _user.periodo, _fromDate1.month, _fromDate1.day) : null,
-                        initialValue: (_fromDate1 != null && _user.periodo != null) ? DateTime(_fromDate1.year - _user.periodo, _fromDate1.month, _fromDate1.day) : null,
+                        initialDate: (_fromDate1 != null && periodoController.text  != null) ? DateTime(_fromDate1.year - int.parse(periodoController.text), _fromDate1.month, _fromDate1.day) : null,
+                        initialValue: DateTime.parse(initialDate.text),
                         format: dateFormat,
                         enabled: true,
                         dateOnly: true,
@@ -265,6 +272,7 @@ class _PolizaFormState extends State<PolizaForm> {
                           }
                         },
                       ),
+                      */
                       DateTimePicker(
                         labelText: 'From',
                         selectedDate: _fromDate,
