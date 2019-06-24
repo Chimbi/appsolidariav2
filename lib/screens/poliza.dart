@@ -125,30 +125,6 @@ class _PolizaFormState extends State<PolizaForm> {
     );
   }
 
-  Widget searchHintValidator(){
-    if (isSearchFieldEmpty && isValidatorClicked) {
-      return new Column(
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(bottom: 8.0),
-            color: Colors.red,
-            height: 1,
-          ),
-          Align(
-            alignment: Alignment(-1, 0),
-            child: Text(
-              "Please select name",
-              style: TextStyle(
-                  fontSize: 12, color: Color.fromARGB(255, 215, 67, 67)),
-            ),
-          )
-        ],
-      );
-    } else {
-      return new Container();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -167,7 +143,7 @@ class _PolizaFormState extends State<PolizaForm> {
         ),
         body: Container(
             padding:
-            const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+                const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
             child: Builder(
                 builder: (context) => Form(
                     key: _formKey,
@@ -177,45 +153,36 @@ class _PolizaFormState extends State<PolizaForm> {
                       loading
                           ? CircularProgressIndicator()
                           : searchTextField = AutoCompleteTextField<User>(
-                        onFocusChanged: (hasFocus) {
-                          print("hasFocus - " + hasFocus.toString());
-                        },
-                        clearOnSubmit: false,
-                        key: key,
-                        suggestions: users,
-                        style: TextStyle(
-                            color: Colors.black, fontSize: 16.0),
-                        decoration: InputDecoration(
-                          contentPadding:
-                          EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 20.0),
-                          hintText: "Search Name",
-                          hintStyle: TextStyle(color: Colors.black),
-                          enabledBorder: UnderlineInputBorder(
-                            //condition == true ? new Container() : new Container()
-                            borderSide: isValidatorClicked ? BorderSide(color: Colors.red, width: 1.0) : BorderSide(color: Colors.grey, width: 1.0) ,
-                          ),
-                        ),
-                        itemFilter: (item, query) {
-                          return item.name
-                              .toLowerCase()
-                              .contains(query.toLowerCase());
-                        },
-                        itemSorter: (a, b) {
-                          return a.name.compareTo(b.name);
-                        },
-                        itemSubmitted: (item) {
-                          setState(() {
-                            searchTextField.textField.controller.text =
-                                item.name;
-                          });
-                        },
-                        itemBuilder: (context, item) {
-                          // ui for the autocompelete row
-                          return row(item);
-                        },
-                      ),
-
-                      searchHintValidator(),
+                              clearOnSubmit: false,
+                              key: key,
+                              suggestions: users,
+                              style: TextStyle(
+                                  color: Colors.black, fontSize: 16.0),
+                              decoration: InputDecoration(
+                                contentPadding:
+                                    EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 20.0),
+                                hintText: "Search Name",
+                                hintStyle: TextStyle(color: Colors.black),
+                              ),
+                              itemFilter: (item, query) {
+                                return item.name
+                                    .toLowerCase()
+                                    .contains(query.toLowerCase());
+                              },
+                              itemSorter: (a, b) {
+                                return a.name.compareTo(b.name);
+                              },
+                              itemSubmitted: (item) {
+                                setState(() {
+                                  searchTextField.textField.controller.text =
+                                      item.name;
+                                });
+                              },
+                              itemBuilder: (context, item) {
+                                // ui for the autocompelete row
+                                return row(item);
+                              },
+                            ),
 
                       DropdownButtonFormField<String>(
                         value: dropdownValue,
@@ -324,16 +291,7 @@ class _PolizaFormState extends State<PolizaForm> {
                           setState(() {
                             _fromDate1 = date;
                             //initialDate.text = date.toString();
-                            finalDate.text = initialDate.text != ""
-                                ? initialDate.text.substring(0, 2) +
-                                "-" +
-                                initialDate.text.substring(3, 5) +
-                                "-" +
-                                (int.parse(initialDate.text
-                                    .substring(6, 10)) -
-                                    int.parse(periodoController.text))
-                                    .toString()
-                                : "";
+                            finalDate.text = initialDate.text != "" ? initialDate.text.substring(0,2)+"-"+initialDate.text.substring(3,5)+"-"+(int.parse(initialDate.text.substring(6,10))-int.parse(periodoController.text)).toString() : "";
                             print("initialDate: ${initialDate.text}");
                           });
                         },
@@ -349,21 +307,10 @@ class _PolizaFormState extends State<PolizaForm> {
                         //firstDate: _fromDate1,
                         controller: finalDate,
                         initialDate:
-                        (_fromDate1 != null && periodoController.text != "")
-                            ? DateTime(
-                            _fromDate1.year -
-                                int.parse(periodoController.text),
-                            _fromDate1.month,
-                            _fromDate1.day)
-                            : DateTime.now(),
-                        initialValue: finalDate.text != ""
-                            ? DateTime.parse(
-                            (int.parse(finalDate.text.substring(6, 10)) -
-                                int.parse(periodoController.text))
-                                .toString() +
-                                finalDate.text.substring(3, 5) +
-                                finalDate.text.substring(0, 2))
-                            : DateTime.now(),
+                            (_fromDate1 != null && periodoController.text != "")
+                                ? DateTime(_fromDate1.year - int.parse(periodoController.text), _fromDate1.month, _fromDate1.day)
+                                : DateTime.now(),
+                        initialValue: finalDate.text != "" ? DateTime.parse((int.parse(finalDate.text.substring(6,10))-int.parse(periodoController.text)).toString()+finalDate.text.substring(3,5)+finalDate.text.substring(0,2)) : DateTime.now(),
                         format: dateFormat,
                         enabled: true,
                         dateOnly: true,
@@ -377,37 +324,19 @@ class _PolizaFormState extends State<PolizaForm> {
                       ),
                       //Text(initialDate.text != "" ? DateTime.parse((int.parse(initialDate.text.substring(6,10))-int.parse(periodoController.text)).toString()+initialDate.text.substring(3,5)+initialDate.text.substring(0,2)).toString() : ""),
 
+
                       Container(
                           padding: const EdgeInsets.symmetric(
                               vertical: 16.0, horizontal: 16.0),
                           child: RaisedButton(
                               onPressed: () {
                                 final form = _formKey.currentState;
-
-                                if (searchTextField.textField.controller.text ==
-                                    "") {
-                                  setState(() {
-                                    isValidatorClicked = true;
-                                    isSearchFieldEmpty = true;
-                                    print("Log - " +
-                                        searchTextField
-                                            .textField.controller.text);
-                                  });
-                                } else {
-                                  setState(() {
-                                    isSearchFieldEmpty = false;
-                                  });
-                                }
-
                                 if (form.validate()) {
-                                  if(searchTextField.textField.controller.text !=
-                                      ""){
-                                    Scaffold.of(context).showSnackBar(SnackBar(
-                                        content: Text('Processing Data')));
-                                    form.save();
-                                    _user.save();
-                                    _showDialog(context);
-                                  }
+                                  Scaffold.of(context).showSnackBar(SnackBar(
+                                      content: Text('Processing Data')));
+                                  form.save();
+                                  _user.save();
+                                  _showDialog(context);
                                 }
                               },
                               child: Text('Save'))),
@@ -430,21 +359,17 @@ class UserSearch extends SearchDelegate<User> {
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
-      IconButton(
-          icon: Icon(Icons.clear),
-          onPressed: () {
-            query = '';
-          }),
+      IconButton(icon: Icon(Icons.clear), onPressed: () {
+        query = '';
+      }),
     ];
   }
 
   @override
   Widget buildLeading(BuildContext context) {
-    return IconButton(
-        icon: Icon(Icons.arrow_back),
-        onPressed: () {
-          close(context, null);
-        });
+    return IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
+      close(context,null);
+    });
   }
 
   @override
