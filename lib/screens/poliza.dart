@@ -125,7 +125,7 @@ class _PolizaFormState extends State<PolizaForm> {
     );
   }
 
-  Widget searchHintValidator() {
+  Widget searchHintValidator(){
     if (isSearchFieldEmpty && isValidatorClicked) {
       return new Column(
         children: <Widget>[
@@ -276,8 +276,7 @@ class _PolizaFormState extends State<PolizaForm> {
                             return 'Please enter a valid period';
                           }
                         },
-                        onSaved: (val) =>
-                            setState(() => _user.periodo = int.parse(val)),
+                        onSaved: (val) => setState(() => _user.periodo = int.parse(val)),
                       ),
 /*
                           //Money text form field
