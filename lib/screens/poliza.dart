@@ -368,8 +368,8 @@ class UserSearch extends SearchDelegate<User> {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
-      close(context,null);
-    });
+      close(context, null);
+    },);
   }
 
   @override
@@ -384,7 +384,7 @@ class UserSearch extends SearchDelegate<User> {
           leading: Icon(Icons.book),
           subtitle: Text(a.email),
           onTap: () {
-            query = a.name;
+            close(context, a);
           },
         );
       }).toList(),
