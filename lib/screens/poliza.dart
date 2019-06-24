@@ -238,7 +238,7 @@ class _PolizaFormState extends State<PolizaForm> {
                         decoration: InputDecoration(labelText: 'Periodo'),
                         validator: (value) {
                           if (value.isEmpty) {
-                            return 'Ingrese un periodo valido';
+                            return 'Please enter a valid period';
                           }
                         },
                         onSaved: (val) =>
