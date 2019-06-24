@@ -1,8 +1,8 @@
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:appsolidariav2/model/user.dart';
 import 'dart:convert';
-import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 
 class AutoCompleteDemo extends StatefulWidget {
   AutoCompleteDemo() : super();
@@ -18,6 +18,7 @@ class _AutoCompleteDemoState extends State<AutoCompleteDemo> {
   GlobalKey<AutoCompleteTextFieldState<User>> key = new GlobalKey();
   static List<User> users = new List<User>();
   bool loading = true;
+  TextEditingController controller = TextEditingController();
 
   void getUsers() async {
     try {
@@ -80,6 +81,7 @@ class _AutoCompleteDemoState extends State<AutoCompleteDemo> {
               : searchTextField = AutoCompleteTextField<User>(
             key: key,
             clearOnSubmit: false,
+            //submitOnSuggestionTap: true,
             suggestions: users,
             style: TextStyle(color: Colors.black, fontSize: 16.0),
             decoration: InputDecoration(
@@ -97,8 +99,13 @@ class _AutoCompleteDemoState extends State<AutoCompleteDemo> {
             },
             itemSubmitted: (item) {
               setState(() {
+                print("Log - "+item.name);
                 searchTextField.textField.controller.text = item.name;
               });
+            },
+            onFocusChanged:  (hasFocus) {
+              print("hasFocus - "+hasFocus.toString());
+
             },
             itemBuilder: (context, item) {
               // ui for the autocompelete row
