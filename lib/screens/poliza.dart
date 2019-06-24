@@ -374,7 +374,20 @@ class UserSearch extends SearchDelegate<User> {
   @override
   Widget buildResults(BuildContext context) {
     // TODO: implement buildResults
-    return Container();
+    final results = users.where((a) => a.name.toLowerCase().contains(query));
+
+    return ListView(
+      children: results.map<ListTile>((a){
+        return ListTile(
+          title: Text(a.name),
+          leading: Icon(Icons.book),
+          subtitle: Text(a.email),
+          onTap: () {
+            query = a.name;
+          },
+        );
+      }).toList(),
+    );
   }
 
   @override
@@ -384,7 +397,16 @@ class UserSearch extends SearchDelegate<User> {
     final results = users.where((a) => a.name.toLowerCase().contains(query));
 
     return ListView(
-      children: results.map<Widget>((a)=>Text(a.name)).toList(),
+      children: results.map<ListTile>((a){
+        return ListTile(
+          title: Text(a.name),
+          leading: Icon(Icons.book),
+          subtitle: Text(a.email),
+          onTap: () {
+            query = a.name;
+          },
+        );
+      }).toList(),
     );
   }
 }
