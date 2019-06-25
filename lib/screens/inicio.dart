@@ -17,6 +17,8 @@ class PaginaInicio extends StatelessWidget {
         Icon(Icons.person_add, size: 60.0, color: amarilloSolidaria1)),
     MenuRoute("Test", '/test',
         Icon(Icons.tag_faces, size: 60.0, color: amarilloSolidaria1)),
+    MenuRoute("PDF", '/pdfdemo',
+        Icon(Icons.picture_as_pdf, size: 60.0, color: amarilloSolidaria1)),
 /*
     menuRoute("Temporarios", '/polizas',
         Icon(Icons.list, size: 60.0, color: amarilloSolidaria1)),
