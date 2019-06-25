@@ -15,6 +15,13 @@ class User {
       typeNeg: parsedJson["typeNeg"] as String,
     );
   }
+
+
+  @override
+  String toString() {
+    return '$name';
+  }
+
   save(){
     print("User saved");
   }

@@ -8,6 +8,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:http/http.dart' as http;
+import 'package:simple_autocomplete_formfield/simple_autocomplete_formfield.dart';
 
 List<User> users = new List<User>();
 
@@ -38,7 +39,7 @@ class _PolizaFormState extends State<PolizaForm> {
   //String _activity = 'fishing';
 
   DateFormat
-  dateFormat; //DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"); //DateFormat('dd-MM-yyyy'); DateFormat.yMMMd()
+      dateFormat; //DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"); //DateFormat('dd-MM-yyyy'); DateFormat.yMMMd()
 
   TextEditingController initialDate = TextEditingController();
   TextEditingController finalDate = TextEditingController();
@@ -68,12 +69,14 @@ class _PolizaFormState extends State<PolizaForm> {
 
   //Autocomplete variables
 
+  User selectedUser;
+
   bool loading = true;
 
   void getUsers() async {
     try {
       final response =
-      await http.get("https://jsonplaceholder.typicode.com/users");
+          await http.get("https://jsonplaceholder.typicode.com/users");
       if (response.statusCode == 200) {
         users = loadUsers(response.body);
         print('Users: ${users.length}');
@@ -134,10 +137,8 @@ class _PolizaFormState extends State<PolizaForm> {
             IconButton(
                 icon: Icon(Icons.search),
                 onPressed: () {
-                  showSearch(
-                    context: context,
-                    delegate: UserSearch(),
-                  );
+                  showSearch(context: context, delegate: UserSearch())
+                      .then((user) => print("${user.name}"));
                 })
           ],
         ),
@@ -149,7 +150,45 @@ class _PolizaFormState extends State<PolizaForm> {
                     key: _formKey,
                     child: ListView(children: [
                       //Center(child: Text("Fecha emision: ${dateFormat.format(_fechaEmision)}")),
-
+                      loading
+                          ? CircularProgressIndicator()
+                          : SimpleAutocompleteFormField<User>(
+                              decoration: InputDecoration(
+                                  labelText: 'User'),
+                              suggestionsHeight: 150.0,
+                              itemBuilder: (context, user) => Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(user.name,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                          Text(user.email)
+                                        ]),
+                                  ),
+                              onSearch: (search) async => users
+                                  .where((user) =>
+                                      user.name
+                                          .toLowerCase()
+                                          .contains(search.toLowerCase()) ||
+                                      user.email
+                                          .toLowerCase()
+                                          .contains(search.toLowerCase()))
+                                  .toList(),
+                              itemFromString: (string) => users.singleWhere((user) =>
+                                      user.name.toLowerCase() ==
+                                      string.toLowerCase(),
+                                  orElse: () => null),
+                              onChanged: (value) =>
+                                  setState(() => selectedUser = value),
+                              onSaved: (value) =>
+                                  setState(() => selectedUser = value),
+                              validator: (user) =>
+                                  user == null ? 'Invalid person.' : null,
+                            ),
+/*
                       loading
                           ? CircularProgressIndicator()
                           : searchTextField = AutoCompleteTextField<User>(
@@ -183,7 +222,7 @@ class _PolizaFormState extends State<PolizaForm> {
                                 return row(item);
                               },
                             ),
-
+*/
                       DropdownButtonFormField<String>(
                         value: dropdownValue,
                         hint: Text("Type of business"),
@@ -243,7 +282,8 @@ class _PolizaFormState extends State<PolizaForm> {
                             return 'Please enter a valid period';
                           }
                         },
-                        onSaved: (val) => setState(() => _user.periodo = int.parse(val)),
+                        onSaved: (val) =>
+                            setState(() => _user.periodo = int.parse(val)),
                       ),
 /*
                           //Money text form field
@@ -291,7 +331,16 @@ class _PolizaFormState extends State<PolizaForm> {
                           setState(() {
                             _fromDate1 = date;
                             //initialDate.text = date.toString();
-                            finalDate.text = initialDate.text != "" ? initialDate.text.substring(0,2)+"-"+initialDate.text.substring(3,5)+"-"+(int.parse(initialDate.text.substring(6,10))-int.parse(periodoController.text)).toString() : "";
+                            finalDate.text = initialDate.text != ""
+                                ? initialDate.text.substring(0, 2) +
+                                    "-" +
+                                    initialDate.text.substring(3, 5) +
+                                    "-" +
+                                    (int.parse(initialDate.text
+                                                .substring(6, 10)) -
+                                            int.parse(periodoController.text))
+                                        .toString()
+                                : "";
                             print("initialDate: ${initialDate.text}");
                           });
                         },
@@ -308,9 +357,21 @@ class _PolizaFormState extends State<PolizaForm> {
                         controller: finalDate,
                         initialDate:
                             (_fromDate1 != null && periodoController.text != "")
-                                ? DateTime(_fromDate1.year - int.parse(periodoController.text), _fromDate1.month, _fromDate1.day)
+                                ? DateTime(
+                                    _fromDate1.year -
+                                        int.parse(periodoController.text),
+                                    _fromDate1.month,
+                                    _fromDate1.day)
                                 : DateTime.now(),
-                        initialValue: finalDate.text != "" ? DateTime.parse((int.parse(finalDate.text.substring(6,10))-int.parse(periodoController.text)).toString()+finalDate.text.substring(3,5)+finalDate.text.substring(0,2)) : DateTime.now(),
+                        initialValue: (finalDate.text != "" &&
+                                periodoController.text != "")
+                            ? DateTime.parse(
+                                (int.parse(finalDate.text.substring(6, 10)) -
+                                            int.parse(periodoController.text))
+                                        .toString() +
+                                    finalDate.text.substring(3, 5) +
+                                    finalDate.text.substring(0, 2))
+                            : DateTime.now(),
                         format: dateFormat,
                         enabled: true,
                         dateOnly: true,
@@ -323,7 +384,6 @@ class _PolizaFormState extends State<PolizaForm> {
                         },
                       ),
                       //Text(initialDate.text != "" ? DateTime.parse((int.parse(initialDate.text.substring(6,10))-int.parse(periodoController.text)).toString()+initialDate.text.substring(3,5)+initialDate.text.substring(0,2)).toString() : ""),
-
 
                       Container(
                           padding: const EdgeInsets.symmetric(
@@ -359,17 +419,22 @@ class UserSearch extends SearchDelegate<User> {
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
-      IconButton(icon: Icon(Icons.clear), onPressed: () {
-        query = '';
-      }),
+      IconButton(
+          icon: Icon(Icons.clear),
+          onPressed: () {
+            query = '';
+          }),
     ];
   }
 
   @override
   Widget buildLeading(BuildContext context) {
-    return IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
-      close(context, null);
-    },);
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, null);
+      },
+    );
   }
 
   @override
@@ -378,7 +443,7 @@ class UserSearch extends SearchDelegate<User> {
     final results = users.where((a) => a.name.toLowerCase().contains(query));
 
     return ListView(
-      children: results.map<ListTile>((a){
+      children: results.map<ListTile>((a) {
         return ListTile(
           title: Text(a.name),
           leading: Icon(Icons.book),
@@ -398,16 +463,18 @@ class UserSearch extends SearchDelegate<User> {
     final results = users.where((a) => a.name.toLowerCase().contains(query));
 
     return ListView(
-      children: results.map<ListTile>((a){
+      children: results.map<ListTile>((a) {
         return ListTile(
           title: Text(a.name),
           leading: Icon(Icons.book),
           subtitle: Text(a.email),
           onTap: () {
-            query = a.name;
+            close(context, a);
           },
         );
       }).toList(),
     );
   }
 }
+
+
