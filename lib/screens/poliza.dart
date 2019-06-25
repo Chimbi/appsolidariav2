@@ -1,9 +1,7 @@
 import 'dart:convert';
 
-import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:appsolidariav2/model/user.dart';
-import 'package:appsolidariav2/widgets/datetime.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -188,41 +186,7 @@ class _PolizaFormState extends State<PolizaForm> {
                               validator: (user) =>
                                   user == null ? 'Invalid person.' : null,
                             ),
-/*
-                      loading
-                          ? CircularProgressIndicator()
-                          : searchTextField = AutoCompleteTextField<User>(
-                              clearOnSubmit: false,
-                              key: key,
-                              suggestions: users,
-                              style: TextStyle(
-                                  color: Colors.black, fontSize: 16.0),
-                              decoration: InputDecoration(
-                                contentPadding:
-                                    EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 20.0),
-                                hintText: "Search Name",
-                                hintStyle: TextStyle(color: Colors.black),
-                              ),
-                              itemFilter: (item, query) {
-                                return item.name
-                                    .toLowerCase()
-                                    .contains(query.toLowerCase());
-                              },
-                              itemSorter: (a, b) {
-                                return a.name.compareTo(b.name);
-                              },
-                              itemSubmitted: (item) {
-                                setState(() {
-                                  searchTextField.textField.controller.text =
-                                      item.name;
-                                });
-                              },
-                              itemBuilder: (context, item) {
-                                // ui for the autocompelete row
-                                return row(item);
-                              },
-                            ),
-*/
+
                       DropdownButtonFormField<String>(
                         value: dropdownValue,
                         hint: Text("Type of business"),
@@ -247,24 +211,6 @@ class _PolizaFormState extends State<PolizaForm> {
                         onSaved: (val) => setState(() => _user.typeNeg = val),
                       ),
 
-/*
-                      DropdownButton<String>(
-                        value: dropdownValue,
-                        hint: Text("Tipo de negocio"),
-                        onChanged: (String newValue) {
-                          setState(() {
-                            dropdownValue = newValue;
-                          });
-                        },
-                        items: tipoNeg1
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                      */
                       TextFormField(
                         decoration: InputDecoration(labelText: 'First name'),
                         validator: (value) {
