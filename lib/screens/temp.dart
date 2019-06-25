@@ -17,7 +17,7 @@ class __PageSelectorState extends State<_PageSelector>
 
   void _handleArrowButtonPress(BuildContext context, int delta) {
     final TabController controller = DefaultTabController.of(context);
-    final int controllerLength = 2;
+    final int controllerLength = 4;
     if (!controller.indexIsChanging)
       controller.animateTo((controller.index + delta).clamp(
           0, controllerLength - 1)); //2 se cambia por widget.icons.length
