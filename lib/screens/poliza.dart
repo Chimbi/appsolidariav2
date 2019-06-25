@@ -43,6 +43,7 @@ class _PolizaFormState extends State<PolizaForm> {
   TextEditingController finalDate = TextEditingController();
   TextEditingController prueba = TextEditingController();
   TextEditingController periodoController = TextEditingController();
+  TextEditingController cupoController = TextEditingController();
 
   List<String> typeNeg = [
     "One",
@@ -60,7 +61,6 @@ class _PolizaFormState extends State<PolizaForm> {
 
   List<String> added = [];
   String currentText = "";
-  GlobalKey<AutoCompleteTextFieldState<User>> key = new GlobalKey();
 
   bool isSearchFieldEmpty = true;
   bool isValidatorClicked = false;
@@ -93,9 +93,6 @@ class _PolizaFormState extends State<PolizaForm> {
     final parsed = json.decode(jsonString).cast<Map<String, dynamic>>();
     return parsed.map<User>((json) => User.fromJson(json)).toList();
   }
-
-  SimpleAutoCompleteTextField textField;
-  AutoCompleteTextField searchTextField;
 
   @override
   void initState() {
@@ -148,48 +145,16 @@ class _PolizaFormState extends State<PolizaForm> {
                     key: _formKey,
                     child: ListView(children: [
                       //Center(child: Text("Fecha emision: ${dateFormat.format(_fechaEmision)}")),
-                      loading
-                          ? CircularProgressIndicator()
-                          : SimpleAutocompleteFormField<User>(
-                              decoration: InputDecoration(
-                                  labelText: 'User'),
-                              suggestionsHeight: 150.0,
-                              itemBuilder: (context, user) => Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(user.name,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                          Text(user.email)
-                                        ]),
-                                  ),
-                              onSearch: (search) async => users
-                                  .where((user) =>
-                                      user.name
-                                          .toLowerCase()
-                                          .contains(search.toLowerCase()) ||
-                                      user.email
-                                          .toLowerCase()
-                                          .contains(search.toLowerCase()))
-                                  .toList(),
-                              itemFromString: (string) => users.singleWhere((user) =>
-                                      user.name.toLowerCase() ==
-                                      string.toLowerCase(),
-                                  orElse: () => null),
-                              onChanged: (value) =>
-                                  setState(() => selectedUser = value),
-                              onSaved: (value) =>
-                                  setState(() => selectedUser = value),
-                              validator: (user) =>
-                                  user == null ? 'Invalid person.' : null,
-                            ),
-
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Text(
+                            "Bienvenido al modulo de emisión, por favor ingrese los siguientes datos:"),
+                      ),
                       DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                            labelText: "Type of business",
+                            icon: Icon(Icons.store)),
                         value: dropdownValue,
-                        hint: Text("Type of business"),
                         onChanged: (String newValue) {
                           setState(() {
                             dropdownValue = newValue;
@@ -198,7 +163,7 @@ class _PolizaFormState extends State<PolizaForm> {
                         },
                         validator: (String value) {
                           if (value?.isEmpty ?? true) {
-                            return 'Please enter a valid type of business';
+                            return 'Favor ingrese el tipo de negocio';
                           }
                         },
                         items: tipoNeg1
@@ -210,22 +175,67 @@ class _PolizaFormState extends State<PolizaForm> {
                         }).toList(),
                         onSaved: (val) => setState(() => _user.typeNeg = val),
                       ),
-
-                      TextFormField(
-                        decoration: InputDecoration(labelText: 'First name'),
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter your first name';
-                          }
-                        },
-                        onSaved: (val) => setState(() => _user.name = val),
+                      Center(
+                        child: loading
+                            ? CircularProgressIndicator()
+                            : SimpleAutocompleteFormField<User>(
+                                decoration: InputDecoration(
+                                    labelText: 'User/ Afianzado',
+                                    icon: Icon(Icons.person)),
+                                suggestionsHeight: 80.0,
+                                itemBuilder: (context, user) => Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(user.name,
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            Text(user.email)
+                                          ]),
+                                    ),
+                                onSearch: (search) async => users
+                                    .where((user) =>
+                                        user.name
+                                            .toLowerCase()
+                                            .contains(search.toLowerCase()) ||
+                                        user.email
+                                            .toLowerCase()
+                                            .contains(search.toLowerCase()))
+                                    .toList(),
+                                itemFromString: (string) => users.singleWhere(
+                                    (user) =>
+                                        user.name.toLowerCase() ==
+                                        string.toLowerCase(),
+                                    orElse: () => null),
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedUser = value;
+                                    cupoController.text = value.email;
+                                  });
+                                },
+                                onSaved: (value) => setState(() {
+                                      selectedUser = value;
+                                      _user.name = value.name;
+                                      print(
+                                          "Selected user email ${selectedUser.email}");
+                                    }),
+                                validator: (user) => user == null
+                                    ? 'El Afianzado no existe.'
+                                    : null,
+                              ),
                       ),
                       TextFormField(
-                        controller: periodoController,
-                        decoration: InputDecoration(labelText: 'Periodo'),
+                        controller: cupoController,
+                        decoration: InputDecoration(
+                            labelText: 'Budget /Cupo Disponible',
+                            icon: Icon(Icons.attach_money)),
+                        enabled: true,
                         validator: (value) {
                           if (value.isEmpty) {
-                            return 'Please enter a valid period';
+                            return 'Debe verificarse el cupo';
                           }
                         },
                         onSaved: (val) =>
@@ -260,8 +270,22 @@ class _PolizaFormState extends State<PolizaForm> {
                         },
                       ),
 */
+                      TextFormField(
+                        controller: periodoController,
+                        decoration: InputDecoration(
+                            labelText: 'Period /Período en años',
+                            icon: Icon(Icons.access_time)),
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Período inválido';
+                          }
+                        },
+                        onSaved: (val) =>
+                            setState(() => _user.periodo = int.parse(val)),
+                      ),
                       DateTimePickerFormField(
-                        decoration: InputDecoration(labelText: 'To'),
+                        decoration:
+                            InputDecoration(labelText: 'Fecha inicio /From'),
                         controller: initialDate,
                         format: dateFormat,
                         enabled: true,
@@ -277,13 +301,14 @@ class _PolizaFormState extends State<PolizaForm> {
                           setState(() {
                             _fromDate1 = date;
                             //initialDate.text = date.toString();
+                            //finalDate is the controller for the next date
                             finalDate.text = initialDate.text != ""
                                 ? initialDate.text.substring(0, 2) +
                                     "-" +
                                     initialDate.text.substring(3, 5) +
                                     "-" +
                                     (int.parse(initialDate.text
-                                                .substring(6, 10)) -
+                                                .substring(6, 10)) +
                                             int.parse(periodoController.text))
                                         .toString()
                                 : "";
@@ -298,13 +323,14 @@ class _PolizaFormState extends State<PolizaForm> {
                       ),
 
                       DateTimePickerFormField(
-                        decoration: InputDecoration(labelText: 'From'),
+                        decoration:
+                            InputDecoration(labelText: 'Fecha final /To'),
                         //firstDate: _fromDate1,
                         controller: finalDate,
                         initialDate:
                             (_fromDate1 != null && periodoController.text != "")
                                 ? DateTime(
-                                    _fromDate1.year -
+                                    _fromDate1.year +
                                         int.parse(periodoController.text),
                                     _fromDate1.month,
                                     _fromDate1.day)
@@ -312,7 +338,7 @@ class _PolizaFormState extends State<PolizaForm> {
                         initialValue: (finalDate.text != "" &&
                                 periodoController.text != "")
                             ? DateTime.parse(
-                                (int.parse(finalDate.text.substring(6, 10)) -
+                                (int.parse(finalDate.text.substring(6, 10)) +
                                             int.parse(periodoController.text))
                                         .toString() +
                                     finalDate.text.substring(3, 5) +
@@ -422,5 +448,3 @@ class UserSearch extends SearchDelegate<User> {
     );
   }
 }
-
-

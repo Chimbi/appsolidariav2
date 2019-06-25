@@ -1,6 +1,7 @@
 import 'package:appsolidariav2/screens/inicio.dart';
 import 'package:appsolidariav2/screens/poliza.dart';
 import 'package:appsolidariav2/screens/terceros.dart';
+import 'package:appsolidariav2/screens/temp.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -21,6 +22,8 @@ class MyApp extends StatelessWidget {
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/poliza': (context) => PolizaForm(),
         '/terceros': (context) => AutoCompleteDemo(),
+        '/test': (context) => PageSelectorDemo(),
+
       },
 
       //home: MyHomePage(title: 'Flutter Demo Home Page'),
