@@ -241,35 +241,6 @@ class _PolizaFormState extends State<PolizaForm> {
                         onSaved: (val) =>
                             setState(() => _user.periodo = int.parse(val)),
                       ),
-/*
-                          //Money text form field
-                          MoneyTextFormField(
-                              settings: MoneyTextFormFieldSettings(
-                                appearanceSettings: AppearanceSettings(
-                                  labelText: 'Valor Contrato',
-                                 ),
-                                  moneyFormatSettings: MoneyFormatSettings(
-                                    fractionDigits: 2,
-                                  ),
-                                  controller: mycontroller,
-                                validator: (value){
-                                  if(value.isEmpty) {
-                                    return 'Please enter a valid contract value.';
-                                  }
-                                }
-                              ),
-                          ),
-*/
-/*
-                      DateTimePickerFormField(
-                        format: dateFormat,
-                        onChanged: (date) {
-                          Scaffold
-                              .of(context)
-                              .showSnackBar(SnackBar(content: Text('$date')));
-                        },
-                      ),
-*/
                       TextFormField(
                         controller: periodoController,
                         decoration: InputDecoration(
@@ -321,7 +292,6 @@ class _PolizaFormState extends State<PolizaForm> {
                           });
                         },
                       ),
-
                       DateTimePickerFormField(
                         decoration:
                             InputDecoration(labelText: 'Fecha final /To'),
@@ -355,8 +325,6 @@ class _PolizaFormState extends State<PolizaForm> {
                           }
                         },
                       ),
-                      //Text(initialDate.text != "" ? DateTime.parse((int.parse(initialDate.text.substring(6,10))-int.parse(periodoController.text)).toString()+initialDate.text.substring(3,5)+initialDate.text.substring(0,2)).toString() : ""),
-
                       Container(
                           padding: const EdgeInsets.symmetric(
                               vertical: 16.0, horizontal: 16.0),
@@ -372,6 +340,35 @@ class _PolizaFormState extends State<PolizaForm> {
                                 }
                               },
                               child: Text('Save'))),
+                      /*
+                          //Money text form field
+                          MoneyTextFormField(
+                              settings: MoneyTextFormFieldSettings(
+                                appearanceSettings: AppearanceSettings(
+                                  labelText: 'Valor Contrato',
+                                 ),
+                                  moneyFormatSettings: MoneyFormatSettings(
+                                    fractionDigits: 2,
+                                  ),
+                                  controller: mycontroller,
+                                validator: (value){
+                                  if(value.isEmpty) {
+                                    return 'Please enter a valid contract value.';
+                                  }
+                                }
+                              ),
+                          ),
+*/
+/*
+                      DateTimePickerFormField(
+                        format: dateFormat,
+                        onChanged: (date) {
+                          Scaffold
+                              .of(context)
+                              .showSnackBar(SnackBar(content: Text('$date')));
+                        },
+                      ),
+*/
                     ])))));
   }
 
