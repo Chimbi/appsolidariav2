@@ -60,39 +60,24 @@ class MyPage extends Page {
 }
 
 class Block extends StatelessWidget {
-  Block({this.title});
+  Block({this.title, this.amount});
 
   final String title;
+  final String amount;
 
   @override
   Widget build(Context context) {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Row(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-            Container(
-              width: 6,
-              height: 6,
-              margin: const EdgeInsets.only(top: 2.5, left: 2, right: 5),
-              decoration:
-                  const BoxDecoration(color: green, shape: BoxShape.circle),
-            ),
-            Text(title,
-                style: Theme.of(context)
-                    .defaultTextStyle
-                    .copyWith(fontWeight: FontWeight.bold)),
-          ]),
           Container(
-            decoration: const BoxDecoration(
-                border: BoxBorder(left: true, color: green, width: 2)),
-            padding: const EdgeInsets.only(left: 10, top: 5, bottom: 5),
-            margin: const EdgeInsets.only(left: 5),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Lorem(length: 20),
-                ]),
+            alignment: Alignment.center,
+            child: Text(title, style: TextStyle(color: black, fontSize: 6)),
           ),
+          Container(
+              margin: EdgeInsets.only(top: 3),
+              alignment: Alignment.center,
+              child: Text(amount, style: TextStyle(color: black, fontSize: 10, fontWeight: FontWeight.bold)))
         ]);
   }
 }
@@ -174,7 +159,14 @@ class tempMemberList {
   final int IMPRESION_MES;
   final int IMPRESION_ANO;
 
-  tempMemberList(this.AGENCIA_EXPEDIDORA ,
+  final String VALOR_ASEGURADO_TOTAL;
+  final String VALOR_PRIMA;
+  final String GASTOS_EXPEDICION;
+  final String IVA;
+  final String TOTAL_A_PAGAR;
+
+  tempMemberList(
+      this.AGENCIA_EXPEDIDORA,
       this.COD_AGENCIA,
       this.RAMO,
       this.TIPO_DE_MOVIMIENTO,
@@ -184,20 +176,40 @@ class tempMemberList {
       this.FECHA_ANO,
       this.IMPRESION_DIA,
       this.IMPRESION_MES,
-      this.IMPRESION_ANO);
+      this.IMPRESION_ANO,
+      this.VALOR_ASEGURADO_TOTAL,
+      this.VALOR_PRIMA,
+      this.GASTOS_EXPEDICION,
+      this.IVA,
+      this.TOTAL_A_PAGAR);
 }
 
-
 Future<Document> generateDocument(PdfPageFormat format) async {
-
-  tempMemberList tempObject = tempMemberList("BOGOTÁ CALLE 100", 376 , 45, "EXPEDICION", "REIMPRESION",  23 , 05 , 2017 , 23 , 05 , 2017);
+  tempMemberList tempObject = tempMemberList(
+    "BOGOTÁ CALLE 100",
+    376,
+    45,
+    "EXPEDICION",
+    "REIMPRESION",
+    23,
+    05,
+    2017,
+    23,
+    05,
+    2017,
+    "****12,000,000.00",
+    "***********18,000",
+    "*****9,000.00",
+    "********5,130",
+    "***********32,130",
+  );
 
   final PdfDoc pdf = PdfDoc(title: 'My Résumé', author: 'David PHAM-VAN');
 
   final PdfImage profileImage = await pdfImageFromImageProvider(
       pdf: pdf.document,
-      image: const fw.NetworkImage(
-          'https://i.ibb.co/dQDz2ys/logo-Solidaria.png'),
+      image:
+          const fw.NetworkImage('https://i.ibb.co/dQDz2ys/logo-Solidaria.png'),
       onError: (dynamic exception, StackTrace stackTrace) {
         print('Unable to download image');
       });
@@ -222,14 +234,14 @@ Future<Document> generateDocument(PdfPageFormat format) async {
             Container(
                 margin: EdgeInsets.all(10),
                 decoration: const BoxDecoration(
-                  border: BoxBorder(
-                      left: true,
-                      top: true,
-                      bottom: true,
-                      right: true,
-                      color: grey,
-                      width: 1),
-                ),
+                    border: BoxBorder(
+                        left: true,
+                        top: true,
+                        bottom: true,
+                        right: true,
+                        color: grey,
+                        width: 1),
+                    borderRadius: 16),
                 padding: const EdgeInsets.all(10.0),
                 child: Column(children: <Widget>[
                   Row(
@@ -290,19 +302,22 @@ Future<Document> generateDocument(PdfPageFormat format) async {
                                 Container(
                                   alignment: Alignment.center,
                                   width: 20,
-                                  child: BlackBoldText(title: tempObject.FECHA_DIA.toString()),
+                                  child: BlackBoldText(
+                                      title: tempObject.FECHA_DIA.toString()),
                                 ),
                                 Container(height: 11, width: 1, color: black),
                                 Container(
                                   alignment: Alignment.center,
                                   width: 20,
-                                  child: BlackBoldText(title: tempObject.FECHA_MES.toString()),
+                                  child: BlackBoldText(
+                                      title: tempObject.FECHA_MES.toString()),
                                 ),
                                 Container(height: 11, width: 1, color: black),
                                 Container(
                                   alignment: Alignment.center,
                                   width: 31,
-                                  child: BlackBoldText(title: tempObject.FECHA_ANO.toString()),
+                                  child: BlackBoldText(
+                                      title: tempObject.FECHA_ANO.toString()),
                                 ),
                                 Container(height: 11, width: 1, color: black),
                               ]),
@@ -344,19 +359,25 @@ Future<Document> generateDocument(PdfPageFormat format) async {
                                 Container(
                                   alignment: Alignment.center,
                                   width: 20,
-                                  child: BlackBoldText(title: tempObject.IMPRESION_DIA.toString()),
+                                  child: BlackBoldText(
+                                      title:
+                                          tempObject.IMPRESION_DIA.toString()),
                                 ),
                                 Container(height: 11, width: 1, color: black),
                                 Container(
                                   alignment: Alignment.center,
                                   width: 20,
-                                  child: BlackBoldText(title: tempObject.IMPRESION_MES.toString()),
+                                  child: BlackBoldText(
+                                      title:
+                                          tempObject.IMPRESION_MES.toString()),
                                 ),
                                 Container(height: 11, width: 1, color: black),
                                 Container(
                                   alignment: Alignment.center,
                                   width: 31,
-                                  child: BlackBoldText(title: tempObject.IMPRESION_ANO.toString()),
+                                  child: BlackBoldText(
+                                      title:
+                                          tempObject.IMPRESION_ANO.toString()),
                                 ),
                                 Container(height: 11, width: 1, color: black),
                               ]),
@@ -374,7 +395,50 @@ Future<Document> generateDocument(PdfPageFormat format) async {
                           ]),
                         ])
                       ]),
-                ]))
+                ])),
+            Container(
+                margin: EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                    border: BoxBorder(
+                        left: true,
+                        top: true,
+                        bottom: true,
+                        right: true,
+                        color: grey,
+                        width: 1),
+                    borderRadius: 16),
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Expanded(
+                          child: Block(
+                              title: "VALOR ASEGURADO TOTAL:",
+                              amount: tempObject.VALOR_ASEGURADO_TOTAL),
+                          flex: 1),
+                      Container(height: 40, width: 1, color: grey),
+                      Expanded(
+                          child: Block(
+                              title: "VALOR PRIMA:",
+                              amount: tempObject.VALOR_PRIMA),
+                          flex: 1),
+                      Container(height: 40, width: 1, color: grey),
+                      Expanded(
+                          child: Block(
+                              title: "GASTOS EXPEDICION:",
+                              amount: tempObject.GASTOS_EXPEDICION),
+                          flex: 1),
+                      Container(height: 40, width: 1, color: grey),
+                      Expanded(
+                          child: Block(title: "IVA:", amount: tempObject.IVA),
+                          flex: 1),
+                      Container(height: 40, width: 1, color: grey),
+                      Expanded(
+                          child: Block(
+                              title: "TOTAL A PAGAR:",
+                              amount: tempObject.TOTAL_A_PAGAR),
+                          flex: 1),
+                    ])),
           ]),
 
       /* Column(children: <Widget>[

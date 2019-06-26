@@ -26,6 +26,12 @@ class PdfDemoState extends State<PdfDemo> {
   final GlobalKey<State<StatefulWidget>> shareWidget = GlobalKey();
   final GlobalKey<State<StatefulWidget>> previewContainer = GlobalKey();
 
+  @override
+  void initState() {
+    _printPdf();
+    Navigator.of(context).popUntil(ModalRoute.withName('/'));
+  }
+
   Future<void> _printPdf() async {
     print('Print ...');
     await Printing.layoutPdf(
