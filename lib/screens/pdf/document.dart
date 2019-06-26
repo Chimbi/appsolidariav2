@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart' as mw;
 import 'package:flutter/widgets.dart' as fw;
@@ -158,19 +159,38 @@ class NormalText extends StatelessWidget {
   }
 }
 
+class tempMemberList {
+  final String AGENCIA_EXPEDIDORA;
+  final int COD_AGENCIA;
+  final int RAMO;
+  final String TIPO_DE_MOVIMIENTO;
+  final String TIPO_DE_IMPRESION;
+
+  final int FECHA_DIA;
+  final int FECHA_MES;
+  final int FECHA_ANO;
+
+  final int IMPRESION_DIA;
+  final int IMPRESION_MES;
+  final int IMPRESION_ANO;
+
+  tempMemberList(this.AGENCIA_EXPEDIDORA ,
+      this.COD_AGENCIA,
+      this.RAMO,
+      this.TIPO_DE_MOVIMIENTO,
+      this.TIPO_DE_IMPRESION,
+      this.FECHA_DIA,
+      this.FECHA_MES,
+      this.FECHA_ANO,
+      this.IMPRESION_DIA,
+      this.IMPRESION_MES,
+      this.IMPRESION_ANO);
+}
+
+
 Future<Document> generateDocument(PdfPageFormat format) async {
 
-  List temp = [
-    {
-      'id': 1,
-      'question': 'How was your experience with us?',
-      'question_type': 'radio',
-      'from_date': '1-6-2019',
-      'to_date': '10-6-2019',
-      'ans_array': [{'ans_id':1, 'ans':'Yes'},{'ans_id':1, 'ans':'No'}]
-    },
-  ];
-
+  tempMemberList tempObject = tempMemberList("BOGOTÁ CALLE 100", 376 , 45, "EXPEDICION", "REIMPRESION",  23 , 05 , 2017 , 23 , 05 , 2017);
 
   final PdfDoc pdf = PdfDoc(title: 'My Résumé', author: 'David PHAM-VAN');
 
@@ -216,13 +236,13 @@ Future<Document> generateDocument(PdfPageFormat format) async {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Row(children: <Widget>[
-                          TitleText(title: "AGENCIA EXPEDIDORA:"),
-                          TitleTextValue(title: "  BOGOTÁ CALLE 100")
+                          TitleText(title: "AGENCIA EXPEDIDORA:  "),
+                          TitleTextValue(title: tempObject.AGENCIA_EXPEDIDORA)
                         ]),
                         Row(children: <Widget>[
                           Row(children: <Widget>[
-                            TitleText(title: "COD. AGENCIA:"),
-                            TitleText(title: "  376")
+                            TitleText(title: "COD. AGENCIA:  "),
+                            TitleText(title: tempObject.COD_AGENCIA.toString())
                           ]),
                           Container(width: 10),
                           Row(children: <Widget>[
@@ -237,12 +257,12 @@ Future<Document> generateDocument(PdfPageFormat format) async {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Row(children: <Widget>[
-                          TitleText(title: "TIPO DE MOVIMIENTO:"),
-                          TitleTextValue(title: "  EXPEDICION")
+                          TitleText(title: "TIPO DE MOVIMIENTO:  "),
+                          TitleTextValue(title: tempObject.TIPO_DE_MOVIMIENTO)
                         ]),
                         Row(children: <Widget>[
-                          TitleText(title: "TIPO DE IMPRESIÓN:"),
-                          TitleText(title: "  REIMPRESION")
+                          TitleText(title: "TIPO DE IMPRESIÓN:  "),
+                          TitleText(title: tempObject.TIPO_DE_IMPRESION)
                         ]),
                         Row(children: <Widget>[
                           Row(children: <Widget>[
@@ -270,19 +290,19 @@ Future<Document> generateDocument(PdfPageFormat format) async {
                                 Container(
                                   alignment: Alignment.center,
                                   width: 20,
-                                  child: BlackBoldText(title: '23'),
+                                  child: BlackBoldText(title: tempObject.FECHA_DIA.toString()),
                                 ),
                                 Container(height: 11, width: 1, color: black),
                                 Container(
                                   alignment: Alignment.center,
                                   width: 20,
-                                  child: BlackBoldText(title: '05'),
+                                  child: BlackBoldText(title: tempObject.FECHA_MES.toString()),
                                 ),
                                 Container(height: 11, width: 1, color: black),
                                 Container(
                                   alignment: Alignment.center,
                                   width: 31,
-                                  child: BlackBoldText(title: '2017'),
+                                  child: BlackBoldText(title: tempObject.FECHA_ANO.toString()),
                                 ),
                                 Container(height: 11, width: 1, color: black),
                               ]),
@@ -324,19 +344,19 @@ Future<Document> generateDocument(PdfPageFormat format) async {
                                 Container(
                                   alignment: Alignment.center,
                                   width: 20,
-                                  child: BlackBoldText(title: '23'),
+                                  child: BlackBoldText(title: tempObject.IMPRESION_DIA.toString()),
                                 ),
                                 Container(height: 11, width: 1, color: black),
                                 Container(
                                   alignment: Alignment.center,
                                   width: 20,
-                                  child: BlackBoldText(title: '05'),
+                                  child: BlackBoldText(title: tempObject.IMPRESION_MES.toString()),
                                 ),
                                 Container(height: 11, width: 1, color: black),
                                 Container(
                                   alignment: Alignment.center,
                                   width: 31,
-                                  child: BlackBoldText(title: '2017'),
+                                  child: BlackBoldText(title: tempObject.IMPRESION_ANO.toString()),
                                 ),
                                 Container(height: 11, width: 1, color: black),
                               ]),
