@@ -22,6 +22,18 @@ dependencies:
   http: ^0.12.0+2
   autocomplete_textfield: ^1.6.6
   intl: ^0.15.8
+
+  #redux
+  redux: ^3.0.0
+  flutter_redux: ^0.5.3
+  redux_logging: ^0.3.0
+  flutter_redux_dev_tools: ^0.3.0
+  redux_dev_tools: ^0.4.0
+  rxdart: ^0.22.0
+
+  get_it: ^1.0.3+2
+
+
   flutter:
     sdk: flutter
 
