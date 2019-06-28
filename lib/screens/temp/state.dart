@@ -22,6 +22,8 @@ class Page1FormState {
   final TextEditingController pruebaController;
   final TextEditingController periodoController;
   final TextEditingController cupoController;
+  final TextEditingController userAutocompleteController;
+
   final List<String> tipoNeg1;
   User selectedUser;
   List<User> users;
@@ -30,54 +32,54 @@ class Page1FormState {
   DateTime minDate;
   DateTime fromDate;
   DateTime fromDate1;
-  Page1FormState({
-    this.registrationOnGoing,
-    this.registrationError,
-    this.registrationMessage,
-    this.initialDateController,
-    this.finalDateController,
-    this.pruebaController,
-    this.periodoController,
-    this.cupoController,
-    this.formKey,
-    this.dropdownValue,
-    this.tipoNeg1,
-    this.users,
-    this.loading,
-    this.selectedUser,
-    this.dateFormat,
-    this.minDate,
-    this.fromDate,
-    this.fromDate1,
-  });
+  Page1FormState(
+      {this.registrationOnGoing,
+      this.registrationError,
+      this.registrationMessage,
+      this.initialDateController,
+      this.finalDateController,
+      this.pruebaController,
+      this.periodoController,
+      this.cupoController,
+      this.formKey,
+      this.dropdownValue,
+      this.tipoNeg1,
+      this.users,
+      this.loading,
+      this.selectedUser,
+      this.dateFormat,
+      this.minDate,
+      this.fromDate,
+      this.fromDate1,
+      this.userAutocompleteController});
 
   factory Page1FormState.initial({DateTime fromDate}) {
     print("Initial called");
     return Page1FormState(
-      registrationOnGoing: false,
-      registrationError: false,
-      registrationMessage: "",
-      cupoController: TextEditingController(),
-      finalDateController: TextEditingController(),
-      initialDateController: TextEditingController(),
-      periodoController: TextEditingController(),
-      pruebaController: TextEditingController(),
-      formKey: GlobalKey<FormState>(debugLabel: "page-one-form-key"),
-      tipoNeg1: <String>[
-        "Particular",
-        "Estatal",
-        "Servicios Publicos",
-        "Poliza Ecopetrol",
-        "E.Publicas R.Privado"
-      ],
-      users: List<User>(),
-      loading: true,
-      selectedUser: User(),
-      dateFormat: new DateFormat('dd-MM-yyyy'),
-      minDate: DateTime(fromDate.year - 1, fromDate.month, fromDate.day),
-      fromDate: DateTime.now(),
-      fromDate1: null,
-    );
+        registrationOnGoing: false,
+        registrationError: false,
+        registrationMessage: "",
+        cupoController: TextEditingController(),
+        finalDateController: TextEditingController(),
+        initialDateController: TextEditingController(),
+        periodoController: TextEditingController(),
+        pruebaController: TextEditingController(),
+        formKey: GlobalKey<FormState>(debugLabel: "page-one-form-key"),
+        tipoNeg1: <String>[
+          "Particular",
+          "Estatal",
+          "Servicios Publicos",
+          "Poliza Ecopetrol",
+          "E.Publicas R.Privado"
+        ],
+        users: List<User>(),
+        loading: true,
+        selectedUser: User(),
+        dateFormat: new DateFormat('dd-MM-yyyy'),
+        minDate: DateTime(fromDate.year - 1, fromDate.month, fromDate.day),
+        fromDate: DateTime.now(),
+        fromDate1: null,
+        userAutocompleteController: TextEditingController());
   }
 
   Page1FormState copyWith({
@@ -89,6 +91,7 @@ class Page1FormState {
     TextEditingController pruebaController,
     TextEditingController periodoController,
     TextEditingController cupoController,
+    TextEditingController userAutocompleteController,
     String dropdownValue,
     List<User> users,
     bool loading,
@@ -105,7 +108,7 @@ class Page1FormState {
       periodoController: this.periodoController,
       cupoController: this.cupoController,
       pruebaController: this.pruebaController,
-
+      userAutocompleteController: this.userAutocompleteController,
       // Registration response,
       registrationOnGoing: registrationOnGoing ?? this.registrationOnGoing,
       registrationError: registrationError ?? this.registrationError,
@@ -161,6 +164,7 @@ final page1FormStateReducer = combineReducers<AppState>([
   TypedReducer<AppState, FromDate1Changed>(_fromDate1Changed),
   TypedReducer<AppState, LoadingChanged>(_loadingChanged),
   TypedReducer<AppState, PeriodChanged>(_periodChanged),
+  TypedReducer<AppState, CupoChanged>(_cupoChanged),
 ]);
 
 class RegistrationCompleteResponseAction {
@@ -239,6 +243,18 @@ AppState _periodChanged(AppState state, PeriodChanged action) {
   return state.copyWith(
       page1formState: state.page1formState.copyWith(
     periodoController: TextEditingController(text: action.period),
+  ));
+}
+
+class CupoChanged {
+  final String cupo;
+  CupoChanged(this.cupo);
+}
+
+AppState _cupoChanged(AppState state, CupoChanged action) {
+  return state.copyWith(
+      page1formState: state.page1formState.copyWith(
+    userAutocompleteController: TextEditingController(text: action.cupo),
   ));
 }
 

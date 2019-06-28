@@ -70,7 +70,10 @@ class __PageSelectorState extends State<_PageSelector>
           },
           onSaveFromDate1: (DateTime date) {
             store.dispatch(FromDate1Changed(date));
-          });
+          },
+          onChangeSelectedUser: (selectedUser) {
+            store.dispatch(UserChanged(selectedUser));
+          },onChangeCupo: (cupo){store.dispatch(CupoChanged(cupo));});
     }, onInit: (store) async {
       // store.state.page1formState.getUsers();
       try {
@@ -183,6 +186,7 @@ class __PageSelectorState extends State<_PageSelector>
                                                         'User/ Afianzado',
                                                     icon: Icon(Icons.person)),
                                                 suggestionsHeight: 80.0,
+                                                controller: vm.page1formState.userAutocompleteController,
                                                 itemBuilder: (context, user) =>
                                                     Padding(
                                                       padding:
@@ -222,8 +226,12 @@ class __PageSelectorState extends State<_PageSelector>
                                                                 .toLowerCase(),
                                                         orElse: () => null),
                                                 onChanged: (value) {
-                                                  vm.page1formState
-                                                      .selectedUser = value;
+                                                  if(value==null)return;
+                                                  vm.onChangeSelectedUser(
+                                                      value);
+                                                  vm.onChangeCupo(value.email);
+//                                                  vm.page1formState
+//                                                      .selectedUser = value;
                                                   vm
                                                       .page1formState
                                                       .cupoController
@@ -454,12 +462,17 @@ class Page1ViewModel {
   final Function() onSave;
   final Function(DateTime date) onSaveFromDate;
   final Function(DateTime date) onSaveFromDate1;
+  final Function(User selectedUser) onChangeSelectedUser;
+  final Function(String cupo) onChangeCupo;
   final void Function(String selectedBusiness) onBusinessTypeChange;
 
-  Page1ViewModel(
-      {this.page1formState,
-      this.onSave,
-      this.onBusinessTypeChange,
-      this.onSaveFromDate,
-      this.onSaveFromDate1});
+  Page1ViewModel({
+    this.page1formState,
+    this.onSave,
+    this.onBusinessTypeChange,
+    this.onSaveFromDate,
+    this.onSaveFromDate1,
+    this.onChangeSelectedUser,
+    this.onChangeCupo
+  });
 }
