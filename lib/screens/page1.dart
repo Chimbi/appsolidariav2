@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:appsolidariav2/model/user.dart';
+import 'package:appsolidariav2/utils/app_state.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_autocomplete_formfield/simple_autocomplete_formfield.dart';
 import 'package:http/http.dart' as http;
 
@@ -77,201 +79,216 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Card(
-        margin: EdgeInsets.all(10.0),
-        child: Column(
-          children: <Widget>[
-            ExpansionTile(
-              title: Text("Basic Data"),
-              initiallyExpanded: true,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
-                        labelText: "Type of business", icon: Icon(Icons.store)),
-                    value: dropdownValue,
-                    onChanged: (String newValue) {
-                      setState(() {
-                        dropdownValue = newValue;
-                        prueba.text = newValue;
-                      });
-                    },
-                    validator: (String value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Favor ingrese el tipo de negocio';
-                      }
-                    },
-                    items:
-                        tipoNeg1.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onSaved: (val) => setState(() => _user.typeNeg = val),
-                  ),
-                ),
-                Center(
-                  child: Padding(
+
+    final AppState appState = Provider.of<AppState>(context);
+    
+    cupoController.addListener(() {
+      appState.setCupoText(cupoController.text);
+    });
+
+    periodoController.addListener(() {
+      appState.setPeriodoText(periodoController.text);
+    });
+
+    return SingleChildScrollView(
+      child: Container(
+        child: Card(
+          margin: EdgeInsets.all(10.0),
+          child: Column(
+            children: <Widget>[
+              ExpansionTile(
+                title: Text("Basic Data"),
+                initiallyExpanded: true,
+                children: <Widget>[
+                  Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: loading
-                        ? CircularProgressIndicator()
-                        : SimpleAutocompleteFormField<User>(
-                            decoration: InputDecoration(
-                                labelText: 'User/ Afianzado',
-                                icon: Icon(Icons.person)),
-                            suggestionsHeight: 80.0,
-                            itemBuilder: (context, user) => Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(user.name,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold)),
-                                        Text(user.email)
-                                      ]),
-                                ),
-                            onSearch: (search) async => users
-                                .where((user) =>
-                                    user.name
-                                        .toLowerCase()
-                                        .contains(search.toLowerCase()) ||
-                                    user.email
-                                        .toLowerCase()
-                                        .contains(search.toLowerCase()))
-                                .toList(),
-                            itemFromString: (string) => users.singleWhere(
-                                (user) =>
-                                    user.name.toLowerCase() ==
-                                    string.toLowerCase(),
-                                orElse: () => null),
-                            onChanged: (value) {
-                              setState(() {
-                                selectedUser = value;
-                                cupoController.text = value.email;
-                              });
-                            },
-                            onSaved: (value) => setState(() {
-                                  selectedUser = value;
-                                  _user.name = value.name;
-                                  print(
-                                      "Selected user email ${selectedUser.email}");
-                                }),
-                            validator: (user) =>
-                                user == null ? 'El Afianzado no existe.' : null,
-                          ),
+                    child: DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                          labelText: "Type of business", icon: Icon(Icons.store)),
+                      value: appState.getDropBusinessText,
+                      onChanged: (String newValue) {
+                        appState.setDropBusinessText(newValue);
+                        /*setState(() {
+                          dropdownValue = newValue;
+                          prueba.text = newValue;
+                        });*/
+                      },
+                      validator: (String value) {
+                        if (value?.isEmpty ?? true) {
+                          return 'Favor ingrese el tipo de negocio';
+                        }
+                      },
+                      items:
+                      tipoNeg1.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onSaved: (val) => setState(() => _user.typeNeg = val),
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    controller: cupoController,
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: loading
+                          ? CircularProgressIndicator()
+                          : SimpleAutocompleteFormField<User>(
+                        decoration: InputDecoration(
+                            labelText: 'User/ Afianzado',
+                            icon: Icon(Icons.person)),
+                        suggestionsHeight: 80.0,
+                        itemBuilder: (context, user) => Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Column(
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                              children: [
+                                Text(user.name,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold)),
+                                Text(user.email)
+                              ]),
+                        ),
+                        onSearch: (search) async => users
+                            .where((user) =>
+                        user.name
+                            .toLowerCase()
+                            .contains(search.toLowerCase()) ||
+                            user.email
+                                .toLowerCase()
+                                .contains(search.toLowerCase()))
+                            .toList(),
+                        itemFromString: (string) => users.singleWhere(
+                                (user) =>
+                            user.name.toLowerCase() ==
+                                string.toLowerCase(),
+                            orElse: () => null),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedUser = value;
+                            cupoController.text = value.email;
+                          });
+                        },
+                        onSaved: (value) => setState(() {
+                          selectedUser = value;
+                          _user.name = value.name;
+                          print(
+                              "Selected user email ${selectedUser.email}");
+                        }),
+                        validator: (user) =>
+                        user == null ? 'El Afianzado no existe.' : null,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: cupoController,
+                      decoration: InputDecoration(
+                          labelText: 'Budget /Cupo Disponible',
+                          icon: Icon(Icons.attach_money)),
+                      enabled: true,
+                      onFieldSubmitted: (submitted) => appState.setCupoText(submitted),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Debe verificarse el cupo';
+                        }
+                      },
+                      onSaved: (val) =>
+                          setState(() => _user.periodo = int.parse(val)),
+                    ),
+                  ),
+                ],
+              ),
+              ExpansionTile(
+                initiallyExpanded: true,
+                title: Text("Informacion del contrato"),
+                children: <Widget>[
+                  TextFormField(
+                    controller: periodoController,
                     decoration: InputDecoration(
-                        labelText: 'Budget /Cupo Disponible',
-                        icon: Icon(Icons.attach_money)),
-                    enabled: true,
+                        labelText: 'Period /Período en años',
+                        icon: Icon(Icons.access_time)),
                     validator: (value) {
                       if (value.isEmpty) {
-                        return 'Debe verificarse el cupo';
+                        return 'Período inválido';
                       }
                     },
                     onSaved: (val) =>
                         setState(() => _user.periodo = int.parse(val)),
                   ),
-                ),
-              ],
-            ),
-            ExpansionTile(
-              initiallyExpanded: true,
-              title: Text("Informacion del contrato"),
-              children: <Widget>[
-                TextFormField(
-                  controller: periodoController,
-                  decoration: InputDecoration(
-                      labelText: 'Period /Período en años',
-                      icon: Icon(Icons.access_time)),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Período inválido';
-                    }
-                  },
-                  onSaved: (val) =>
-                      setState(() => _user.periodo = int.parse(val)),
-                ),
-                DateTimePickerFormField(
-                  decoration: InputDecoration(labelText: 'Fecha inicio /From'),
-                  controller: initialDate,
-                  format: dateFormat,
-                  enabled: true,
-                  dateOnly: true,
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Debe ingresar una fecha valida de contrato';
-                    } else if (minDate.isAfter(value)) {
-                      return 'Retroactividad máxima superada';
-                    }
-                  },
-                  onChanged: (DateTime date) {
-                    setState(() {
-                      _fromDate1 = date;
-                      //initialDate.text = date.toString();
-                      //finalDate is the controller for the next date
-                      finalDate.text = initialDate.text != ""
-                          ? initialDate.text.substring(0, 2) +
-                              "-" +
-                              initialDate.text.substring(3, 5) +
-                              "-" +
-                              (int.parse(initialDate.text.substring(6, 10)) +
-                                      int.parse(periodoController.text))
-                                  .toString()
-                          : "";
-                      print("initialDate: ${initialDate.text}");
-                    });
-                  },
-                  onFieldSubmitted: (DateTime date) {
-                    setState(() {
-                      _fromDate1 = date;
-                    });
-                  },
-                ),
-                DateTimePickerFormField(
-                  decoration: InputDecoration(labelText: 'Fecha final /To'),
-                  //firstDate: _fromDate1,
-                  controller: finalDate,
-                  initialDate: (_fromDate1 != null &&
-                          periodoController.text != "")
-                      ? DateTime(
-                          _fromDate1.year + int.parse(periodoController.text),
-                          _fromDate1.month,
-                          _fromDate1.day)
-                      : DateTime.now(),
-                  initialValue:
-                      (finalDate.text != "" && periodoController.text != "")
-                          ? DateTime.parse(
-                              (int.parse(finalDate.text.substring(6, 10)) +
-                                          int.parse(periodoController.text))
-                                      .toString() +
-                                  finalDate.text.substring(3, 5) +
-                                  finalDate.text.substring(0, 2))
-                          : DateTime.now(),
-                  format: dateFormat,
-                  enabled: true,
-                  dateOnly: true,
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Debe ingresar una fecha valida de contrato';
-                    } else if (minDate.isAfter(value)) {
-                      return 'Retroactividad máxima superada';
-                    }
-                  },
-                ),
-              ],
-            )
-          ],
+                  DateTimePickerFormField(
+                    decoration: InputDecoration(labelText: 'Fecha inicio /From'),
+                    controller: initialDate,
+                    format: dateFormat,
+                    enabled: true,
+                    dateOnly: true,
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Debe ingresar una fecha valida de contrato';
+                      } else if (minDate.isAfter(value)) {
+                        return 'Retroactividad máxima superada';
+                      }
+                    },
+                    onChanged: (DateTime date) {
+                      setState(() {
+                        _fromDate1 = date;
+                        //initialDate.text = date.toString();
+                        //finalDate is the controller for the next date
+                        finalDate.text = initialDate.text != ""
+                            ? initialDate.text.substring(0, 2) +
+                            "-" +
+                            initialDate.text.substring(3, 5) +
+                            "-" +
+                            (int.parse(initialDate.text.substring(6, 10)) +
+                                int.parse(periodoController.text))
+                                .toString()
+                            : "";
+                        print("initialDate: ${initialDate.text}");
+                      });
+                    },
+                    onFieldSubmitted: (DateTime date) {
+                      setState(() {
+                        _fromDate1 = date;
+                      });
+                    },
+                  ),
+                  DateTimePickerFormField(
+                    decoration: InputDecoration(labelText: 'Fecha final /To'),
+                    //firstDate: _fromDate1,
+                    controller: finalDate,
+                    initialDate: (_fromDate1 != null &&
+                        periodoController.text != "")
+                        ? DateTime(
+                        _fromDate1.year + int.parse(periodoController.text),
+                        _fromDate1.month,
+                        _fromDate1.day)
+                        : DateTime.now(),
+                    initialValue:
+                    (finalDate.text != "" && periodoController.text != "")
+                        ? DateTime.parse(
+                        (int.parse(finalDate.text.substring(6, 10)) +
+                            int.parse(periodoController.text))
+                            .toString() +
+                            finalDate.text.substring(3, 5) +
+                            finalDate.text.substring(0, 2))
+                        : DateTime.now(),
+                    format: dateFormat,
+                    enabled: true,
+                    dateOnly: true,
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Debe ingresar una fecha valida de contrato';
+                      } else if (minDate.isAfter(value)) {
+                        return 'Retroactividad máxima superada';
+                      }
+                    },
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

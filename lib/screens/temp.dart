@@ -1,8 +1,10 @@
 import 'package:appsolidariav2/screens/page1.dart';
 import 'package:appsolidariav2/screens/page2.dart';
+import 'package:appsolidariav2/utils/app_state.dart';
 import 'package:appsolidariav2/utils/ui_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
+import 'package:provider/provider.dart';
 
 class _PageSelector extends StatefulWidget {
   @override
@@ -29,6 +31,8 @@ class __PageSelectorState extends State<_PageSelector>
 
   @override
   Widget build(BuildContext context) {
+    final AppState appState = Provider.of<AppState>(context);
+
     final TabController controller = DefaultTabController.of(context);
     final Color color = Theme.of(context).accentColor;
     return SafeArea(
@@ -78,22 +82,40 @@ class __PageSelectorState extends State<_PageSelector>
                       Card(
                           margin: EdgeInsets.all(10.0),
                           child: Center(
-                              child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 16.0, horizontal: 16.0),
-                                  child: RaisedButton(
-                                      onPressed: () {
-                                        final form = formKey.currentState;
-                                        if (form.validate()) {
-                                          Scaffold.of(context).showSnackBar(
-                                              SnackBar(
-                                                  content:
+                              child: Column(
+                                children: <Widget>[
+                                  Text(
+
+                                          " cupoText : " + appState.cupoText + "\n" +
+                                          " periodoText : " + appState.periodoText + "\n" +
+                                          " genderText : " + appState.genderText + "\n" +
+                                          " ageText : " + appState.ageText + "\n" +
+                                          " cityText : " + appState.cityText + "\n" +
+                                          " countryText : " + appState.countryText
+                                  ),
+                                  Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 16.0, horizontal: 16.0),
+                                      child: RaisedButton(
+                                          onPressed: () {
+                                            appState.clearData();
+                                            print("appState : " +
+                                                appState.getCupoText +
+                                                " - " +
+                                                appState.getGenderText);
+                                            final form = formKey.currentState;
+                                            if (form.validate()) {
+                                              Scaffold.of(context).showSnackBar(
+                                                  SnackBar(
+                                                      content:
                                                       Text('Processing Data')));
-                                          form.save();
-                                          form.reset();
-                                        }
-                                      },
-                                      child: Text('Save'))))),
+                                              form.save();
+                                              form.reset();
+                                            }
+                                          },
+                                          child: Text('Save')))
+                                ],
+                              ))),
                     ]),
               ),
             ),

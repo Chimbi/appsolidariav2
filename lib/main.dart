@@ -2,7 +2,9 @@ import 'package:appsolidariav2/screens/inicio.dart';
 import 'package:appsolidariav2/screens/poliza.dart';
 import 'package:appsolidariav2/screens/terceros.dart';
 import 'package:appsolidariav2/screens/temp.dart';
+import 'package:appsolidariav2/utils/app_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,26 +12,27 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return ChangeNotifierProvider<AppState>.value(
+      value: AppState(),
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        initialRoute: '/',
+        routes: {
+          // When navigating to the "/" route, build the FirstScreen widget.
+          '/': (context) => PaginaInicio(),
+          // When navigating to the "/second" route, build the SecondScreen widget.
+          '/poliza': (context) => PolizaForm(),
+          '/terceros': (context) => AutoCompleteDemo(),
+          '/test': (context) => PageSelectorDemo(),
+        },
+
+        //home: MyHomePage(title: 'Flutter Demo Home Page'),
+        //https://flutter.dev/docs/cookbook/navigation/named-routes
+        // "Warning: When using initialRoute, don’t define a home property."
       ),
-      initialRoute: '/',
-      routes: {
-        // When navigating to the "/" route, build the FirstScreen widget.
-        '/': (context) => PaginaInicio(),
-        // When navigating to the "/second" route, build the SecondScreen widget.
-        '/poliza': (context) => PolizaForm(),
-        '/terceros': (context) => AutoCompleteDemo(),
-        '/test': (context) => PageSelectorDemo(),
-
-      },
-
-      //home: MyHomePage(title: 'Flutter Demo Home Page'),
-      //https://flutter.dev/docs/cookbook/navigation/named-routes
-      // "Warning: When using initialRoute, don’t define a home property."
-
     );
   }
 }
