@@ -1,10 +1,37 @@
 import 'package:appsolidariav2/screens/inicio.dart';
 import 'package:appsolidariav2/screens/poliza.dart';
 import 'package:appsolidariav2/screens/terceros.dart';
-import 'package:appsolidariav2/screens/temp.dart';
+import 'package:appsolidariav2/screens/temp/view.dart';
+import 'package:appsolidariav2/shared/state/app.dart';
+import 'package:appsolidariav2/shared/state/state.dart';
 import 'package:flutter/material.dart';
+import 'package:redux/redux.dart';
+import 'package:redux_dev_tools/redux_dev_tools.dart';
+import 'package:get_it/get_it.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
-void main() => runApp(MyApp());
+GetIt getIt = GetIt();
+bool developerMode = true;
+
+void main() {
+  Store<AppState> store;
+  if (developerMode) {
+    store = DevToolsStore<AppState>(
+        combineReducers<AppState>([stateReducers, middlewareReducers]),
+        initialState: AppState.initial(),
+        middleware: []);
+  } else {
+    store = Store<AppState>(
+        combineReducers<AppState>([stateReducers, middlewareReducers]),
+        initialState: AppState.initial(),
+        middleware: []);
+  }
+  getIt.registerSingleton<Store<AppState>>(store);
+  runApp(StoreProvider(
+    child: MyApp(),
+    store: store,
+  ));
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -23,13 +50,11 @@ class MyApp extends StatelessWidget {
         '/poliza': (context) => PolizaForm(),
         '/terceros': (context) => AutoCompleteDemo(),
         '/test': (context) => PageSelectorDemo(),
-
       },
 
       //home: MyHomePage(title: 'Flutter Demo Home Page'),
       //https://flutter.dev/docs/cookbook/navigation/named-routes
       // "Warning: When using initialRoute, don’t define a home property."
-
     );
   }
 }
