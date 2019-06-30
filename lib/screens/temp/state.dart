@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:appsolidariav2/model/user.dart';
 import 'package:appsolidariav2/shared/state/app.dart';
 import 'package:flutter/material.dart'
-    show FormState, GlobalKey, TextEditingController, TimeOfDay;
+    show FormState, GlobalKey, TextEditingController, TimeOfDay, required;
 import 'package:intl/intl.dart';
 import 'package:redux/redux.dart';
 import 'package:http/http.dart' as http;
@@ -16,6 +16,7 @@ class Page1FormState {
   String dropdownValue;
 
   final GlobalKey<FormState> formKey;
+  final GlobalKey<FormState> formKey1;
 
   final TextEditingController initialDateController;
   final TextEditingController finalDateController;
@@ -27,7 +28,7 @@ class Page1FormState {
   final List<String> tipoNeg1;
   User selectedUser;
   List<User> users;
-  bool loading;
+  final bool loading;
   DateFormat dateFormat;
   DateTime minDate;
   DateTime fromDate;
@@ -51,35 +52,38 @@ class Page1FormState {
       this.minDate,
       this.fromDate,
       this.fromDate1,
-      this.userAutocompleteController});
+      this.userAutocompleteController,
+      this.formKey1});
 
-  factory Page1FormState.initial({DateTime fromDate}) {
+  factory Page1FormState.initial({@required DateTime fromDate}) {
     print("Initial called");
     return Page1FormState(
-        registrationOnGoing: false,
-        registrationError: false,
-        registrationMessage: "",
-        cupoController: TextEditingController(),
-        finalDateController: TextEditingController(),
-        initialDateController: TextEditingController(),
-        periodoController: TextEditingController(),
-        pruebaController: TextEditingController(),
-        formKey: GlobalKey<FormState>(debugLabel: "page-one-form-key"),
-        tipoNeg1: <String>[
-          "Particular",
-          "Estatal",
-          "Servicios Publicos",
-          "Poliza Ecopetrol",
-          "E.Publicas R.Privado"
-        ],
-        users: List<User>(),
-        loading: true,
-        selectedUser: User(),
-        dateFormat: new DateFormat('dd-MM-yyyy'),
-        minDate: DateTime(fromDate.year - 1, fromDate.month, fromDate.day),
-        fromDate: DateTime.now(),
-        fromDate1: null,
-        userAutocompleteController: TextEditingController());
+      registrationOnGoing: false,
+      registrationError: false,
+      registrationMessage: "",
+      cupoController: TextEditingController(),
+      finalDateController: TextEditingController(),
+      initialDateController: TextEditingController(),
+      periodoController: TextEditingController(),
+      pruebaController: TextEditingController(),
+      formKey: GlobalKey<FormState>(debugLabel: "page-one-form-key"),
+      tipoNeg1: <String>[
+        "Particular",
+        "Estatal",
+        "Servicios Publicos",
+        "Poliza Ecopetrol",
+        "E.Publicas R.Privado"
+      ],
+      users: List<User>(),
+      loading: true,
+      selectedUser: User(),
+      dateFormat: new DateFormat('dd-MM-yyyy'),
+      minDate: DateTime(fromDate.year - 1, fromDate.month, fromDate.day),
+      fromDate: DateTime.now(),
+      fromDate1: null,
+      userAutocompleteController: TextEditingController(),
+      formKey1: GlobalKey<FormState>(debugLabel: "page-one-form-key1"),
+    );
   }
 
   Page1FormState copyWith({
@@ -102,26 +106,27 @@ class Page1FormState {
     User selectedUser,
   }) {
     return Page1FormState(
-      formKey: this.formKey,
-      initialDateController: this.initialDateController,
-      finalDateController: this.finalDateController,
-      periodoController: this.periodoController,
-      cupoController: this.cupoController,
-      pruebaController: this.pruebaController,
-      userAutocompleteController: this.userAutocompleteController,
-      // Registration response,
-      registrationOnGoing: registrationOnGoing ?? this.registrationOnGoing,
-      registrationError: registrationError ?? this.registrationError,
-      registrationMessage: registrationMessage ?? this.registrationMessage,
-      dropdownValue: dropdownValue ?? this.dropdownValue,
-      users: users ?? this.users,
-      fromDate1: fromDate1 ?? this.fromDate1,
-      fromDate: fromDate ?? this.fromDate,
-      minDate: minDate ?? this.minDate,
-      selectedUser: selectedUser ?? this.selectedUser,
-      loading: loading ?? this.loading,
-      tipoNeg1: this.tipoNeg1, dateFormat: this.dateFormat,
-    );
+        formKey: this.formKey,
+        initialDateController: this.initialDateController,
+        finalDateController: this.finalDateController,
+        periodoController: this.periodoController,
+        cupoController: this.cupoController,
+        pruebaController: this.pruebaController,
+        userAutocompleteController: this.userAutocompleteController,
+        // Registration response,
+        registrationOnGoing: registrationOnGoing ?? this.registrationOnGoing,
+        registrationError: registrationError ?? this.registrationError,
+        registrationMessage: registrationMessage ?? this.registrationMessage,
+        dropdownValue: dropdownValue ?? this.dropdownValue,
+        users: users ?? this.users,
+        fromDate1: fromDate1 ?? this.fromDate1,
+        fromDate: fromDate ?? this.fromDate,
+        minDate: minDate ?? this.minDate,
+        selectedUser: selectedUser ?? this.selectedUser,
+        loading: loading ?? this.loading,
+        tipoNeg1: this.tipoNeg1,
+        dateFormat: this.dateFormat,
+        formKey1: this.formKey1);
   }
 
   void getUsers() async {
@@ -132,7 +137,7 @@ class Page1FormState {
         users = loadUsers(response.body);
         print('Users: ${users.length}');
 
-        loading = false;
+        // loading = false;
       } else {
         print("Error getting users.");
       }
@@ -151,7 +156,7 @@ class Page1FormState {
         email: cupoController.text,
         id: 1,
         name: selectedUser.name,
-        typeNeg: selectedUser.typeNeg);
+        typeNeg: dropdownValue);
   }
 }
 
@@ -165,6 +170,7 @@ final page1FormStateReducer = combineReducers<AppState>([
   TypedReducer<AppState, LoadingChanged>(_loadingChanged),
   TypedReducer<AppState, PeriodChanged>(_periodChanged),
   TypedReducer<AppState, CupoChanged>(_cupoChanged),
+  TypedReducer<AppState, ResetForm>(_resetForm),
 ]);
 
 class RegistrationCompleteResponseAction {
@@ -266,4 +272,11 @@ AppState registrationComplete(
     registrationMessage: action.message,
     registrationOnGoing: false,
   ));
+}
+
+class ResetForm {}
+
+AppState _resetForm(AppState state, ResetForm action) {
+  return state.copyWith(
+      page1formState: Page1FormState.initial(fromDate: DateTime(2019)));
 }

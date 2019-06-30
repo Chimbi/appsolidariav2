@@ -33,6 +33,7 @@ dependencies:
 
   get_it: ^1.0.3+2
 
+  extended_tabs: ^0.2.0
 
   flutter:
     sdk: flutter
