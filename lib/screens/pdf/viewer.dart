@@ -13,7 +13,7 @@ class PdfViewer extends StatelessWidget {
   Widget build(BuildContext context) {
     return PDFViewerScaffold(
         appBar: AppBar(
-          title: const Text('Document'),
+          title: const Text('PDF Viewer'),
         ),
         path: file.path);
   }

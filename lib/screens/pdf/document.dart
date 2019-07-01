@@ -1,12 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
-
-import 'package:flutter/material.dart' as mw;
 import 'package:flutter/widgets.dart' as fw;
-
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
-import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 
 const PdfColor green = PdfColor.fromInt(0xff9ce5d0);
@@ -23,37 +18,7 @@ class MyPage extends Page {
 
   @override
   void paint(Widget child, Context context) {
-    context.canvas
-        /*..setColor(lightGreen)
-      ..moveTo(0, pageFormat.height)
-      ..lineTo(0, pageFormat.height - 230)
-      ..lineTo(60, pageFormat.height)
-      ..fillPath()
-      ..setColor(green)
-      ..moveTo(0, pageFormat.height)
-      ..lineTo(0, pageFormat.height - 100)
-      ..lineTo(100, pageFormat.height)
-      ..fillPath()
-      ..setColor(lightGreen)
-      ..moveTo(30, pageFormat.height)
-      ..lineTo(110, pageFormat.height - 50)
-      ..lineTo(150, pageFormat.height)
-      ..fillPath()
-      ..moveTo(pageFormat.width, 0)
-      ..lineTo(pageFormat.width, 230)
-      ..lineTo(pageFormat.width - 60, 0)
-      ..fillPath()
-      ..setColor(green)
-      ..moveTo(pageFormat.width, 0)
-      ..lineTo(pageFormat.width, 100)
-      ..lineTo(pageFormat.width - 100, 0)
-      ..fillPath()
-      ..setColor(lightGreen)
-      ..moveTo(pageFormat.width - 30, 0)
-      ..lineTo(pageFormat.width - 110, 50)
-      ..lineTo(pageFormat.width - 150, 0)
-      ..fillPath()*/
-        ;
+    context.canvas;
 
     super.paint(child, context);
   }
@@ -77,7 +42,9 @@ class Block extends StatelessWidget {
           Container(
               margin: EdgeInsets.only(top: 3),
               alignment: Alignment.center,
-              child: Text(amount, style: TextStyle(color: black, fontSize: 10, fontWeight: FontWeight.bold)))
+              child: Text(amount,
+                  style: TextStyle(
+                      color: black, fontSize: 10, fontWeight: FontWeight.bold)))
         ]);
   }
 }
@@ -144,7 +111,7 @@ class NormalText extends StatelessWidget {
   }
 }
 
-class tempMemberList {
+class PdfData {
   final String AGENCIA_EXPEDIDORA;
   final int COD_AGENCIA;
   final int RAMO;
@@ -165,7 +132,7 @@ class tempMemberList {
   final String IVA;
   final String TOTAL_A_PAGAR;
 
-  tempMemberList(
+  PdfData(
       this.AGENCIA_EXPEDIDORA,
       this.COD_AGENCIA,
       this.RAMO,
@@ -185,7 +152,7 @@ class tempMemberList {
 }
 
 Future<Document> generateDocument(PdfPageFormat format) async {
-  tempMemberList tempObject = tempMemberList(
+  PdfData tempObject = PdfData(
     "BOGOTÁ CALLE 100",
     376,
     45,
@@ -204,7 +171,7 @@ Future<Document> generateDocument(PdfPageFormat format) async {
     "***********32,130",
   );
 
-  final PdfDoc pdf = PdfDoc(title: 'My Résumé', author: 'David PHAM-VAN');
+  final PdfDoc pdf = PdfDoc(title: 'Chimbi Pdf', author: 'Chimbi');
 
   final PdfImage profileImage = await pdfImageFromImageProvider(
       pdf: pdf.document,
@@ -213,9 +180,6 @@ Future<Document> generateDocument(PdfPageFormat format) async {
       onError: (dynamic exception, StackTrace stackTrace) {
         print('Unable to download image');
       });
-
-  var assetsImage = new mw.AssetImage('assets/logo.png');
-  var image = new mw.Image(image: assetsImage);
 
   pdf.addPage(
     MyPage(
@@ -440,81 +404,6 @@ Future<Document> generateDocument(PdfPageFormat format) async {
                           flex: 1),
                     ])),
           ]),
-
-      /* Column(children: <Widget>[
-          Expanded(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                Container(
-                    padding: const EdgeInsets.only(left: 30, bottom: 20),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text('Parnella Charlesbois',
-                              textScaleFactor: 2,
-                              style: Theme.of(context)
-                                  .defaultTextStyle
-                                  .copyWith(fontWeight: FontWeight.bold)),
-                          Padding(padding: const EdgeInsets.only(top: 10)),
-                          Text('Electrotyper',
-                              textScaleFactor: 1.2,
-                              style: Theme.of(context)
-                                  .defaultTextStyle
-                                  .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: green)),
-                          Padding(padding: const EdgeInsets.only(top: 20)),
-                          Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text('568 Port Washington Road'),
-                                      Text('Nordegg, AB T0M 2H0'),
-                                      Text('Canada, ON'),
-                                    ]),
-                                Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text('+1 403-721-6898'),
-                                      Text('p.charlesbois@yahoo.com'),
-                                      Text('wholeprices.ca')
-                                    ]),
-                                Padding(padding: EdgeInsets.zero)
-                              ]),
-                        ])),
-                Category(title: 'Work Experience'),
-                Block(title: 'Tour bus driver'),
-                Block(title: 'Logging equipment operator'),
-                Block(title: 'Foot doctor'),
-                Category(title: 'Education'),
-                Block(title: 'Bachelor Of Commerce'),
-                Block(title: 'Bachelor Interior Design'),
-              ])),
-          Container(
-            height: double.infinity,
-            width: 10,
-            decoration: const BoxDecoration(
-                border: BoxBorder(left: true, color: green, width: 2)),
-          ),
-          Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                ClipOval(
-                    child: Container(
-                        width: 100,
-                        height: 100,
-                        color: lightGreen,
-                        child: profileImage == null
-                            ? Container()
-                            : Image(profileImage)))
-              ])
-        ]*/
     ),
   );
   return pdf;
