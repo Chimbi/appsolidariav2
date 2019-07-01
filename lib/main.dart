@@ -1,4 +1,5 @@
 import 'package:appsolidariav2/screens/inicio.dart';
+import 'package:appsolidariav2/screens/pdf/pdfmain.dart';
 import 'package:appsolidariav2/screens/poliza.dart';
 import 'package:appsolidariav2/screens/terceros.dart';
 import 'package:appsolidariav2/screens/temp.dart';
@@ -28,7 +29,6 @@ class MyApp extends StatelessWidget {
           '/terceros': (context) => AutoCompleteDemo(),
           '/test': (context) => PageSelectorDemo(),
         },
-
         //home: MyHomePage(title: 'Flutter Demo Home Page'),
         //https://flutter.dev/docs/cookbook/navigation/named-routes
         // "Warning: When using initialRoute, don’t define a home property."
