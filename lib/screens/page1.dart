@@ -1,14 +1,26 @@
 import 'dart:convert';
 
 import 'package:appsolidariav2/model/user.dart';
+import 'package:appsolidariav2/shared/state/state.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_autocomplete_formfield/simple_autocomplete_formfield.dart';
 import 'package:http/http.dart' as http;
 
 List<User> users = new List<User>();
+
+class Page1ViewModel {
+  final Page1FormState page1formState;
+  final Function() onSave;
+
+  Page1ViewModel({
+    this.page1formState,
+    this.onSave,
+  });
+}
 
 class Page1 extends StatefulWidget {
   @override
