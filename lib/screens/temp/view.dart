@@ -413,8 +413,11 @@ class __PageSelectorState extends State<_PageSelector>
                                             SnackBar(
                                                 content:
                                                     Text('Processing Data')));
-                                        //form.save();
-                                        vm.onSave();
+                                        form.save();
+                                        form.reset();
+                                        User savedUser = vm.page1formState.toUser();
+                                        print("Saved user: ${savedUser.toString()}");
+                                        //vm.onSave();
                                         vm.resetForm();
                                       }
                                     },

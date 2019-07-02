@@ -19,7 +19,7 @@ class User {
 
   @override
   String toString() {
-    return '$name';
+    return 'You saved a new user: $name';
   }
 
   save(){
