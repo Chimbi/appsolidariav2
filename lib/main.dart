@@ -1,4 +1,5 @@
 import 'package:appsolidariav2/screens/inicio.dart';
+import 'package:appsolidariav2/screens/pdf/pdfmain.dart';
 import 'package:appsolidariav2/screens/poliza.dart';
 import 'package:appsolidariav2/screens/terceros.dart';
 import 'package:appsolidariav2/screens/temp/view.dart';
@@ -50,6 +51,7 @@ class MyApp extends StatelessWidget {
         '/poliza': (context) => PolizaForm(),
         '/terceros': (context) => AutoCompleteDemo(),
         '/test': (context) => PageSelectorDemo(),
+        '/pdfdemo': (context) => PdfDemo(),
       },
 
       //home: MyHomePage(title: 'Flutter Demo Home Page'),
