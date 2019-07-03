@@ -79,9 +79,9 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
-
     final AppState appState = Provider.of<AppState>(context);
-    
+    final User userProvider = Provider.of<User>(context);
+
     cupoController.addListener(() {
       appState.setCupoText(cupoController.text);
     });
@@ -104,7 +104,8 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                     padding: const EdgeInsets.all(8.0),
                     child: DropdownButtonFormField<String>(
                       decoration: InputDecoration(
-                          labelText: "Type of business", icon: Icon(Icons.store)),
+                          labelText: "Type of business",
+                          icon: Icon(Icons.store)),
                       value: appState.getDropBusinessText,
                       onChanged: (String newValue) {
                         appState.setDropBusinessText(newValue);
@@ -118,14 +119,15 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                           return 'Favor ingrese el tipo de negocio';
                         }
                       },
-                      items:
-                      tipoNeg1.map<DropdownMenuItem<String>>((String value) {
+                      items: tipoNeg1
+                          .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
                         );
                       }).toList(),
-                      onSaved: (val) => setState(() => _user.typeNeg = val),
+                      onSaved: (val) => userProvider.setTypeNeg(val),
+                      //setState(() => _user.typeNeg = val),
                     ),
                   ),
                   Center(
@@ -134,51 +136,55 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                       child: loading
                           ? CircularProgressIndicator()
                           : SimpleAutocompleteFormField<User>(
-                        decoration: InputDecoration(
-                            labelText: 'User/ Afianzado',
-                            icon: Icon(Icons.person)),
-                        suggestionsHeight: 80.0,
-                        itemBuilder: (context, user) => Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: [
-                                Text(user.name,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold)),
-                                Text(user.email)
-                              ]),
-                        ),
-                        onSearch: (search) async => users
-                            .where((user) =>
-                        user.name
-                            .toLowerCase()
-                            .contains(search.toLowerCase()) ||
-                            user.email
-                                .toLowerCase()
-                                .contains(search.toLowerCase()))
-                            .toList(),
-                        itemFromString: (string) => users.singleWhere(
-                                (user) =>
-                            user.name.toLowerCase() ==
-                                string.toLowerCase(),
-                            orElse: () => null),
-                        onChanged: (value) {
-                          setState(() {
+                              decoration: InputDecoration(
+                                  labelText: 'User/ Afianzado',
+                                  icon: Icon(Icons.person)),
+                              suggestionsHeight: 80.0,
+                              itemBuilder: (context, user) => Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(user.name,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                          Text(user.email)
+                                        ]),
+                                  ),
+                              onSearch: (search) async => users
+                                  .where((user) =>
+                                      user.name
+                                          .toLowerCase()
+                                          .contains(search.toLowerCase()) ||
+                                      user.email
+                                          .toLowerCase()
+                                          .contains(search.toLowerCase()))
+                                  .toList(),
+                              itemFromString: (string) => users.singleWhere(
+                                  (user) =>
+                                      user.name.toLowerCase() ==
+                                      string.toLowerCase(),
+                                  orElse: () => null),
+                              onChanged: (value) {
+                                appState.setCupoText(value.email);
+                                /*setState(() {
                             selectedUser = value;
                             cupoController.text = value.email;
-                          });
-                        },
-                        onSaved: (value) => setState(() {
-                          selectedUser = value;
-                          _user.name = value.name;
-                          print(
-                              "Selected user email ${selectedUser.email}");
-                        }),
-                        validator: (user) =>
-                        user == null ? 'El Afianzado no existe.' : null,
-                      ),
+                          });*/
+                              },
+                              onSaved: (value) =>
+                                  userProvider.setName(value.name),
+                              /*setState(() {
+                                    selectedUser = value;
+                                    _user.name = value.name;
+                                    print(
+                                        "Selected user email ${selectedUser.email}");
+                                  }),*/
+                              validator: (user) => user == null
+                                  ? 'El Afianzado no existe.'
+                                  : null,
+                            ),
                     ),
                   ),
                   Padding(
@@ -189,14 +195,15 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                           labelText: 'Budget /Cupo Disponible',
                           icon: Icon(Icons.attach_money)),
                       enabled: true,
-                      onFieldSubmitted: (submitted) => appState.setCupoText(submitted),
+                      onFieldSubmitted: (submitted) =>
+                          appState.setCupoText(submitted),
                       validator: (value) {
                         if (value.isEmpty) {
                           return 'Debe verificarse el cupo';
                         }
                       },
-                      onSaved: (val) =>
-                          setState(() => _user.periodo = int.parse(val)),
+                      onSaved: (val) => userProvider.setPeriodo(int.parse(val)),
+                      //setState(() => _user.periodo = int.parse(val)),
                     ),
                   ),
                 ],
@@ -215,11 +222,13 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                         return 'Período inválido';
                       }
                     },
-                    onSaved: (val) =>
-                        setState(() => _user.periodo = int.parse(val)),
+                    onSaved: (val) => userProvider.setPeriodo(int.parse(val)),
+
+                    //setState(() => _user.periodo = int.parse(val)),
                   ),
                   DateTimePickerFormField(
-                    decoration: InputDecoration(labelText: 'Fecha inicio /From'),
+                    decoration:
+                        InputDecoration(labelText: 'Fecha inicio /From'),
                     controller: initialDate,
                     format: dateFormat,
                     enabled: true,
@@ -232,18 +241,20 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                       }
                     },
                     onChanged: (DateTime date) {
+                      appState.setPeriodoText(initialDate.text);
+
                       setState(() {
                         _fromDate1 = date;
                         //initialDate.text = date.toString();
                         //finalDate is the controller for the next date
                         finalDate.text = initialDate.text != ""
                             ? initialDate.text.substring(0, 2) +
-                            "-" +
-                            initialDate.text.substring(3, 5) +
-                            "-" +
-                            (int.parse(initialDate.text.substring(6, 10)) +
-                                int.parse(periodoController.text))
-                                .toString()
+                                "-" +
+                                initialDate.text.substring(3, 5) +
+                                "-" +
+                                (int.parse(initialDate.text.substring(6, 10)) +
+                                        int.parse(periodoController.text))
+                                    .toString()
                             : "";
                         print("initialDate: ${initialDate.text}");
                       });
@@ -259,21 +270,21 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                     //firstDate: _fromDate1,
                     controller: finalDate,
                     initialDate: (_fromDate1 != null &&
-                        periodoController.text != "")
+                            periodoController.text != "")
                         ? DateTime(
-                        _fromDate1.year + int.parse(periodoController.text),
-                        _fromDate1.month,
-                        _fromDate1.day)
+                            _fromDate1.year + int.parse(periodoController.text),
+                            _fromDate1.month,
+                            _fromDate1.day)
                         : DateTime.now(),
                     initialValue:
-                    (finalDate.text != "" && periodoController.text != "")
-                        ? DateTime.parse(
-                        (int.parse(finalDate.text.substring(6, 10)) +
-                            int.parse(periodoController.text))
-                            .toString() +
-                            finalDate.text.substring(3, 5) +
-                            finalDate.text.substring(0, 2))
-                        : DateTime.now(),
+                        (finalDate.text != "" && periodoController.text != "")
+                            ? DateTime.parse(
+                                (int.parse(finalDate.text.substring(6, 10)) +
+                                            int.parse(periodoController.text))
+                                        .toString() +
+                                    finalDate.text.substring(3, 5) +
+                                    finalDate.text.substring(0, 2))
+                            : DateTime.now(),
                     format: dateFormat,
                     enabled: true,
                     dateOnly: true,

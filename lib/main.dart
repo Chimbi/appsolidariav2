@@ -6,14 +6,20 @@ import 'package:appsolidariav2/utils/app_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'model/user.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<AppState>.value(
-      value: AppState(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(builder: (_) => AppState()),
+        ChangeNotifierProvider(builder: (_) => User()),
+      ],
+      //value: User(),
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(

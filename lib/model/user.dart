@@ -1,4 +1,6 @@
-class User {
+import 'package:flutter/foundation.dart';
+
+class User with ChangeNotifier{
   int id;
   String name;
   String email;
@@ -16,6 +18,41 @@ class User {
     );
   }
 
+  void setId(int text) {
+    id = text;
+    notifyListeners();
+  }
+
+  int get getId => id;
+
+
+  void setName(String text) {
+    name = text;
+    notifyListeners();
+  }
+
+  String get getName => name;
+
+  void setEmail(String text) {
+    email = text;
+    notifyListeners();
+  }
+
+  String get getEmail => email;
+
+  void setTypeNeg(String text) {
+    typeNeg = text;
+    notifyListeners();
+  }
+
+  String get getTypeNeg => typeNeg;
+
+  void setPeriodo(int text) {
+    periodo = text;
+    notifyListeners();
+  }
+
+  int get getPeriodo => periodo;
 
   @override
   String toString() {
