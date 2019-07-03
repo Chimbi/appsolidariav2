@@ -1,3 +1,5 @@
+import 'package:appsolidariav2/model/PagerModel.dart';
+import 'package:appsolidariav2/model/user.dart';
 import 'package:flutter/material.dart';
 
 class AppState with ChangeNotifier {
@@ -6,7 +8,9 @@ class AppState with ChangeNotifier {
   //PAGE-1
   String dropBusinessText = null;
   String cupoText = "";
-  String periodoText = "";
+  int periodoText = 0;
+  String emailText = "";
+  String nameText = "";
 
   //PAGE-2
   String genderText = "";
@@ -25,12 +29,12 @@ class AppState with ChangeNotifier {
 
   String get getCupoText => cupoText;
 
-  void setPeriodoText(String text) {
+  void setPeriodoText(int text) {
     periodoText = text;
     notifyListeners();
   }
 
-  String get getPeriodoText => periodoText;
+  int get getPeriodoText => periodoText;
 
   void setDropBusinessText(String text) {
     dropBusinessText = text;
@@ -38,6 +42,20 @@ class AppState with ChangeNotifier {
   }
 
   String get getDropBusinessText => dropBusinessText;
+
+  void setEmailText(String text) {
+    emailText = text;
+    notifyListeners();
+  }
+
+  String get getEmailText => emailText;
+
+  void setNameText(String text) {
+    nameText = text;
+    notifyListeners();
+  }
+
+  String get getNameText => nameText;
 
   //========================== PAGE - 2 ==============================
 
@@ -76,11 +94,37 @@ class AppState with ChangeNotifier {
   void clearData() {
     dropBusinessText = null;
     cupoText = "";
-    periodoText = "";
+    periodoText = 0;
     genderText = "";
     ageText = "";
     cityText = "";
     countryText = "";
+    emailText = "";
+    nameText = "";
     notifyListeners();
+  }
+
+  //============================== Return To Object ======================
+
+  User toUser() {
+    return User(
+        email: getEmailText,
+        id: 1,
+        name: getNameText,
+        typeNeg: getDropBusinessText);
+  }
+
+  Pager toPager() {
+    return Pager(
+      dropBusinessText: getDropBusinessText,
+      cupoText: getCupoText,
+      periodoText: getPeriodoText,
+      emailText: getEmailText,
+      nameText: getNameText,
+      genderText: getGenderText,
+      ageText: getAgeText,
+      cityText: getCityText,
+      countryText: getCountryText,
+    );
   }
 }

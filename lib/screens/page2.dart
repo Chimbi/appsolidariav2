@@ -42,6 +42,7 @@ class _Page2State extends State<Page2> with AutomaticKeepAliveClientMixin {
                   }
                 },
                 onSaved: (value) {
+                  appState.setGenderText(genderController.text);
                   print("Onsave Called for Gender");
                 },
               ),
@@ -57,6 +58,7 @@ class _Page2State extends State<Page2> with AutomaticKeepAliveClientMixin {
                   }
                 },
                 onSaved: (value) {
+                  appState.setAgeText(ageController.text);
                   print("Onsave Called for Age");
                 },
               ),
@@ -113,6 +115,7 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                   }
                 },
                 onSaved: (value) {
+                  appState.setCityText(cityController.text);
                   print("Onsave Called for City");
                 },
               ),
@@ -128,6 +131,7 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                   }
                 },
                 onSaved: (value) {
+                  appState.setCountryText(countryController.text);
                   print("Onsave Called for Country");
                 },
               ),

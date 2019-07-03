@@ -1,3 +1,5 @@
+import 'package:appsolidariav2/model/PagerModel.dart';
+import 'package:appsolidariav2/model/user.dart';
 import 'package:appsolidariav2/screens/page1.dart';
 import 'package:appsolidariav2/screens/page2.dart';
 import 'package:appsolidariav2/utils/app_state.dart';
@@ -13,6 +15,9 @@ class _PageSelector extends StatefulWidget {
 
 class __PageSelectorState extends State<_PageSelector>
     with AutomaticKeepAliveClientMixin {
+
+  AppState appState;
+
   final GlobalKey<FormState> formKey = GlobalKey();
 
   TextEditingController controller = new TextEditingController();
@@ -31,7 +36,7 @@ class __PageSelectorState extends State<_PageSelector>
 
   @override
   Widget build(BuildContext context) {
-    final AppState appState = Provider.of<AppState>(context);
+    appState = Provider.of<AppState>(context);
 
     final TabController controller = DefaultTabController.of(context);
     final Color color = Theme.of(context).accentColor;
@@ -84,33 +89,33 @@ class __PageSelectorState extends State<_PageSelector>
                           child: Center(
                               child: Column(
                                 children: <Widget>[
-                                  Text(
-
-                                          " cupoText : " + appState.cupoText + "\n" +
-                                          " periodoText : " + appState.periodoText + "\n" +
-                                          " genderText : " + appState.genderText + "\n" +
-                                          " ageText : " + appState.ageText + "\n" +
-                                          " cityText : " + appState.cityText + "\n" +
-                                          " countryText : " + appState.countryText
-                                  ),
                                   Container(
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 16.0, horizontal: 16.0),
                                       child: RaisedButton(
                                           onPressed: () {
-                                            appState.clearData();
+                                            //appState.clearData();
                                             print("appState : " +
-                                                appState.getCupoText +
+                                                appState.getDropBusinessText +
                                                 " - " +
-                                                appState.getGenderText);
+                                                appState.getNameText);
                                             final form = formKey.currentState;
                                             if (form.validate()) {
                                               Scaffold.of(context).showSnackBar(
                                                   SnackBar(
                                                       content:
                                                       Text('Processing Data')));
+
+                                              User selectedUser = appState.toUser();
+                                              print("selectedUser : " + selectedUser.toString());
+
+                                              Pager pager = appState.toPager();
+                                              print("pager : " + pager.toString());
+
                                               form.save();
                                               form.reset();
+
+                                              appState.clearData();
                                             }
                                           },
                                           child: Text('Save')))
@@ -128,6 +133,8 @@ class __PageSelectorState extends State<_PageSelector>
   @override
   bool get wantKeepAlive => true;
 }
+
+
 
 class PageSelectorDemo extends StatelessWidget {
   static const String routeName = '/material/page-selector';

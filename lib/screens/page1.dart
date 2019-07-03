@@ -80,15 +80,16 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     final AppState appState = Provider.of<AppState>(context);
-    final User userProvider = Provider.of<User>(context);
 
-    cupoController.addListener(() {
+    print("appState : " + appState.toString());
+
+   /* cupoController.addListener(() {
       appState.setCupoText(cupoController.text);
     });
 
     periodoController.addListener(() {
       appState.setPeriodoText(periodoController.text);
-    });
+    });*/
 
     return SingleChildScrollView(
       child: Container(
@@ -126,7 +127,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                           child: Text(value),
                         );
                       }).toList(),
-                      onSaved: (val) => userProvider.setTypeNeg(val),
+                      onSaved: (val) => appState.setEmailText(val),
                       //setState(() => _user.typeNeg = val),
                     ),
                   ),
@@ -167,14 +168,16 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                                       string.toLowerCase(),
                                   orElse: () => null),
                               onChanged: (value) {
-                                appState.setCupoText(value.email);
+                                appState.setNameText(value.name);
+                                appState.setEmailText(value.email);
+                                cupoController.text = value.email;
                                 /*setState(() {
                             selectedUser = value;
                             cupoController.text = value.email;
                           });*/
                               },
                               onSaved: (value) =>
-                                  userProvider.setName(value.name),
+                                  appState.setNameText(value.name),
                               /*setState(() {
                                     selectedUser = value;
                                     _user.name = value.name;
@@ -202,7 +205,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                           return 'Debe verificarse el cupo';
                         }
                       },
-                      onSaved: (val) => userProvider.setPeriodo(int.parse(val)),
+                      onSaved: (val) => appState.setEmailText(val),
                       //setState(() => _user.periodo = int.parse(val)),
                     ),
                   ),
@@ -213,6 +216,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                 title: Text("Informacion del contrato"),
                 children: <Widget>[
                   TextFormField(
+                    keyboardType: TextInputType.numberWithOptions(),
                     controller: periodoController,
                     decoration: InputDecoration(
                         labelText: 'Period /Período en años',
@@ -222,7 +226,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                         return 'Período inválido';
                       }
                     },
-                    onSaved: (val) => userProvider.setPeriodo(int.parse(val)),
+                    onSaved: (val) => appState.setPeriodoText(int.parse(val)),
 
                     //setState(() => _user.periodo = int.parse(val)),
                   ),
@@ -241,9 +245,22 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                       }
                     },
                     onChanged: (DateTime date) {
-                      appState.setPeriodoText(initialDate.text);
+                      _fromDate1 = date;
+                      //initialDate.text = date.toString();
+                      //finalDate is the controller for the next date
+                      finalDate.text = initialDate.text != ""
+                          ? initialDate.text.substring(0, 2) +
+                          "-" +
+                          initialDate.text.substring(3, 5) +
+                          "-" +
+                          (int.parse(initialDate.text.substring(6, 10)) +
+                              int.parse(periodoController.text))
+                              .toString()
+                          : "";
+                      print("initialDate: ${initialDate.text}");
+                      appState.setPeriodoText(int.parse(initialDate.text));
 
-                      setState(() {
+                      /*setState(() {
                         _fromDate1 = date;
                         //initialDate.text = date.toString();
                         //finalDate is the controller for the next date
@@ -257,7 +274,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                                     .toString()
                             : "";
                         print("initialDate: ${initialDate.text}");
-                      });
+                      });*/
                     },
                     onFieldSubmitted: (DateTime date) {
                       setState(() {

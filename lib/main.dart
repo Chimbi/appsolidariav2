@@ -18,7 +18,6 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(builder: (_) => AppState()),
-        ChangeNotifierProvider(builder: (_) => User()),
       ],
       //value: User(),
       child: MaterialApp(
@@ -34,6 +33,7 @@ class MyApp extends StatelessWidget {
           '/poliza': (context) => PolizaForm(),
           '/terceros': (context) => AutoCompleteDemo(),
           '/test': (context) => PageSelectorDemo(),
+          '/pdfdemo': (context) => PdfDemo(),
         },
         //home: MyHomePage(title: 'Flutter Demo Home Page'),
         //https://flutter.dev/docs/cookbook/navigation/named-routes
