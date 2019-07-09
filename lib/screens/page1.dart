@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_autocomplete_formfield/simple_autocomplete_formfield.dart';
 import 'package:http/http.dart' as http;
 
@@ -89,6 +90,9 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
+
+    var userObj = Provider.of<User>(context);
+
     return Container(
       child: Card(
         margin: EdgeInsets.all(10.0),
@@ -107,7 +111,6 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                     onChanged: (String newValue) {
                       setState(() {
                         dropdownValue = newValue;
-                        prueba.text = newValue;
                       });
                     },
                     validator: (String value) {
@@ -122,7 +125,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                         child: Text(value),
                       );
                     }).toList(),
-                    onSaved: (val) => setState(() => _user.typeNeg = val),
+                    onSaved: (val) => setState(() => userObj.typeNeg = val),
                   ),
                 ),
                 Center(
@@ -169,7 +172,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                             },
                             onSaved: (value) => setState(() {
                                   selectedUser = value;
-                                  _user.name = value.name;
+                                  userObj.name = value.name;
                                   print(
                                       "Selected user email ${selectedUser.email}");
                                 }),
@@ -192,7 +195,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                       }
                     },
                     onSaved: (val) =>
-                        setState(() => _user.periodo = int.parse(val)),
+                        setState(() => userObj.periodo = int.parse(val)),
                   ),
                 ),
               ],
@@ -212,7 +215,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                     }
                   },
                   onSaved: (val) =>
-                      setState(() => _user.periodo = int.parse(val)),
+                      setState(() => userObj.periodo = int.parse(val)),
                 ),
                 DateTimePickerFormField(
                   decoration: InputDecoration(labelText: 'Fecha inicio /From'),
@@ -251,6 +254,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                   },
                 ),
                 DateTimePickerFormField(
+                  onSaved: (value) => print("Voy a hacer algo despues"),
                   decoration: InputDecoration(labelText: 'Fecha final /To'),
                   //firstDate: _fromDate1,
                   controller: finalDate,
