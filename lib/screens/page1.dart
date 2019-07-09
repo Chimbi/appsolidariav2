@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_autocomplete_formfield/simple_autocomplete_formfield.dart';
 import 'package:http/http.dart' as http;
+import 'package:appsolidariav2/widgets/my_formfield.dart' as myTextFormField;
 
 List<User> users = new List<User>();
 
@@ -78,13 +79,15 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
-
     var userObj = Provider.of<User>(context);
 
     return Container(
       child: Card(
         margin: EdgeInsets.all(10.0),
-        child: ListView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             ExpansionTile(
               title: Text("Basic Data"),
@@ -92,7 +95,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: DropdownButtonFormField<String>(
+                  child: DropdownButtonFormField(
                     decoration: InputDecoration(
                         labelText: "Type of business", icon: Icon(Icons.store)),
                     value: dropdownValue,
@@ -108,7 +111,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                     },
                     items:
                         tipoNeg1.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
+                      return DropdownMenuItem(
                         value: value,
                         child: Text(value),
                       );
@@ -121,7 +124,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                     padding: const EdgeInsets.all(8.0),
                     child: loading
                         ? CircularProgressIndicator()
-                        : SimpleAutocompleteFormField<User>(
+                        : SimpleAutocompleteFormField(
                             decoration: InputDecoration(
                                 labelText: 'User/ Afianzado',
                                 icon: Icon(Icons.person)),
@@ -171,7 +174,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
+                  child: myTextFormField.TextFormField(
                     controller: cupoController,
                     decoration: InputDecoration(
                         labelText: 'Budget /Cupo Disponible',
@@ -182,8 +185,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                         return 'Debe verificarse el cupo';
                       }
                     },
-                    onSaved: (val) =>
-                        setState(() => userObj.name = val),
+                    onSaved: (val) => setState(() => userObj.name = val),
                   ),
                 ),
               ],
@@ -192,7 +194,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
               initiallyExpanded: true,
               title: Text("Informacion del contrato"),
               children: <Widget>[
-                TextFormField(
+                myTextFormField.TextFormField(
                   controller: periodoController,
                   decoration: InputDecoration(
                       labelText: 'Period /Período en años',
