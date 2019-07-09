@@ -96,7 +96,7 @@ class __PageSelectorState extends State<_PageSelector>
                                                       Text('Processing Data')));
                                           form.save();
                                           form.reset();
-                                          print(userObj.typeNeg);
+                                          print("The object is working fine: ${userObj.typeNeg}");
                                         }
                                       },
                                       child: Text('Save'))))),
