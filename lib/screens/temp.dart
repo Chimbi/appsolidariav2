@@ -1,8 +1,10 @@
+import 'package:appsolidariav2/model/user.dart';
 import 'package:appsolidariav2/screens/page1.dart';
 import 'package:appsolidariav2/screens/page2.dart';
 import 'package:appsolidariav2/utils/ui_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
+import 'package:provider/provider.dart';
 
 class _PageSelector extends StatefulWidget {
   @override
@@ -31,6 +33,9 @@ class __PageSelectorState extends State<_PageSelector>
   Widget build(BuildContext context) {
     final TabController controller = DefaultTabController.of(context);
     final Color color = Theme.of(context).accentColor;
+
+    var userObj = Provider.of<User>(context);
+
     return SafeArea(
       top: false,
       bottom: false,
@@ -91,6 +96,7 @@ class __PageSelectorState extends State<_PageSelector>
                                                       Text('Processing Data')));
                                           form.save();
                                           form.reset();
+                                          print(userObj.typeNeg);
                                         }
                                       },
                                       child: Text('Save'))))),

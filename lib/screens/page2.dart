@@ -1,4 +1,6 @@
+import 'package:appsolidariav2/model/user.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Page2 extends StatefulWidget {
   @override
@@ -8,6 +10,9 @@ class Page2 extends StatefulWidget {
 class _Page2State extends State<Page2> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
+
+    var userObj = Provider.of<User>(context);
+
     return Container(
       child: Card(
         margin: const EdgeInsets.all(10.0),
