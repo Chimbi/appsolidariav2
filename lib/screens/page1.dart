@@ -84,7 +84,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
     return Container(
       child: Card(
         margin: EdgeInsets.all(10.0),
-        child: Column(
+        child: ListView(
           children: <Widget>[
             ExpansionTile(
               title: Text("Basic Data"),
@@ -183,7 +183,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                       }
                     },
                     onSaved: (val) =>
-                        setState(() => userObj.periodo = int.parse(val)),
+                        setState(() => userObj.name = val),
                   ),
                 ),
               ],
