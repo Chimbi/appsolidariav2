@@ -6,9 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:simple_autocomplete_formfield/simple_autocomplete_formfield.dart';
 import 'package:http/http.dart' as http;
 import 'package:appsolidariav2/widgets/my_formfield.dart' as myTextFormField;
+import 'package:appsolidariav2/widgets/my_date_time_form_field.dart'
+    as myDateFormField;
+import 'package:appsolidariav2/widgets/my_autocomplete_form_field.dart'
+    as myAutoComplete;
+import 'package:appsolidariav2/widgets/my_dropdown-form-field.dart'
+    as myDropdownFormField;
 
 List<User> users = new List<User>();
 
@@ -84,10 +89,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
     return Container(
       child: Card(
         margin: EdgeInsets.all(10.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
+        child: ListView(
           children: <Widget>[
             ExpansionTile(
               title: Text("Basic Data"),
@@ -95,7 +97,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: DropdownButtonFormField(
+                  child: myDropdownFormField.DropdownButtonFormField(
                     decoration: InputDecoration(
                         labelText: "Type of business", icon: Icon(Icons.store)),
                     value: dropdownValue,
@@ -109,9 +111,10 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                         return 'Favor ingrese el tipo de negocio';
                       }
                     },
-                    items:
-                        tipoNeg1.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem(
+                    items: tipoNeg1
+                        .map<myDropdownFormField.DropdownMenuItem<String>>(
+                            (String value) {
+                      return myDropdownFormField.DropdownMenuItem(
                         value: value,
                         child: Text(value),
                       );
@@ -124,7 +127,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                     padding: const EdgeInsets.all(8.0),
                     child: loading
                         ? CircularProgressIndicator()
-                        : SimpleAutocompleteFormField(
+                        : myAutoComplete.SimpleAutocompleteFormField(
                             decoration: InputDecoration(
                                 labelText: 'User/ Afianzado',
                                 icon: Icon(Icons.person)),
@@ -158,7 +161,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                             onChanged: (value) {
                               setState(() {
                                 selectedUser = value;
-                                cupoController.text = value.email;
+                                cupoController.text = value?.email;
                               });
                             },
                             onSaved: (value) => setState(() {
@@ -207,7 +210,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                   onSaved: (val) =>
                       setState(() => userObj.periodo = int.parse(val)),
                 ),
-                DateTimePickerFormField(
+                myDateFormField.DateTimePickerFormField(
                   decoration: InputDecoration(labelText: 'Fecha inicio /From'),
                   controller: initialDate,
                   format: dateFormat,
@@ -243,7 +246,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                     });
                   },
                 ),
-                DateTimePickerFormField(
+                myDateFormField.DateTimePickerFormField(
                   onSaved: (value) => print("Voy a hacer algo despues"),
                   decoration: InputDecoration(labelText: 'Fecha final /To'),
                   //firstDate: _fromDate1,
