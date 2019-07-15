@@ -25,7 +25,6 @@ class Intermediario {
   String segundoApellido;
   String favorito;
 
-  String foto;
   String nacimiento;
 
   //int lugar;
@@ -61,7 +60,7 @@ class Intermediario {
 
   Intermediario({this.auxiliar, this.descClasificacion, this.descTipo,
       this.identificacion, this.primerNombre, this.segundoNombre,
-      this.primerApellido, this.segundoApellido, this.favorito, this.foto,
+      this.primerApellido, this.segundoApellido, this.favorito,
       this.nacimiento, this.descLugar, this.descGenero, this.descEstadoCivil,
       this.direccion, this.descMunicipio, this.movil, this.fijo, this.correo,
       this.documento, this.descAgencia, this.descPuntoVenta, this.clave,
@@ -78,7 +77,6 @@ class Intermediario {
         primerApellido: json["primerApellido"],
         segundoApellido: json["segundoApellido"],
         favorito: json["favorito"],
-        foto: json["foto"],
         nacimiento: json["nacimiento"],
         descLugar: json["descLugar"],
         descGenero: json["descGenero"],
@@ -107,7 +105,6 @@ class Intermediario {
         "primerApellido": primerApellido,
         "segundoApellido": segundoApellido,
         "favorito": favorito,
-        "foto": foto,
         "nacimiento": nacimiento,
         "descLugar": descLugar,
         "descGenero": descGenero,
