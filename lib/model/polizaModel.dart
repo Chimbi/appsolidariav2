@@ -14,135 +14,118 @@ String polizaToJson(Poliza data) {
 }
 
 class Poliza {
-  String descAgencia;
-  String descPuntoVenta;
-  String descRamo = "Cumplimiento";
-  String descTipoPoliza;  // Particular, Estatal, Servicios Publicos Domiciliarios
-  //Poliza Ecopetrol, Empresas públicas con régimen privado de contratación
+  ///NOT in the Form  Informacion del punto de venta de emisión
+  String descAgencia = "Agencia Bogota";
+  String descPuntoVenta = "AC Seguros Ltda";
 
-  int poliza;  //Consecutivo sistema, revisar si se necesita
-  String fechaEmision;
-  int numPoliza;
-  int temporario;
-  int estado;
-
-  Intermediario intermediarios;
+  ///NOT IN THE FORM
+  Intermediario intermediarios = Intermediario(auxiliar: 1,descClasificacion: "Intermediario",);
   //version 1: 1 Intermediario version2: varios intermediarios
-  double comision;
-  int cupoOperativo;
+  double comision;  //Porcentaje de comisión
+  //Ramo comercial
+  String descRamo = "Cumplimiento";
 
-  Afianzado afianzado;
+
+  //Tipo de movimiento: Tipos de anexos. Espedicion
+  //TODO definir que campos van a nivel de anexo y separarlos en un objeto aparte
+
+  ///title: Informacion del afianzado
+
+  String tipoDocumento; // Comes from the Afianzado / Viene del afianzado
+  ///Autocomplete Afianzado search for numeroDocumento/id and apellidoRazonSocial/name
+  int numeroDocumento; // Autocomplete form
+  String apellidoRazonSocial; //Autocomplete form Primer apellido
+  ///CupoOperativo and cumulo actual are in the form as text when you get the info of the afianzado
+  int cupoOperativo; // Comes from the Afianzado
+  int cumuloActual;  //Comes from the Afianzado
+  //Cupo disponible = cupoOperativo - cumuloActual
+
+  //Afianzado afianzado;
   //version 1: 1 Afianzado version2: varios afianzados
-  String clausulado;  //Texto parametrizable variable texto: texto
+  
 
-  int plazoEjecucion;
-  int retroactividad;
-  //divisa solo en pesos
-  //cobra IVA: Siempre se cobra IVA
-  String descTipoOperacion;  //100% Compañia, Coaseguro Cedido, Coaseguro Aceptado
-  //Version 2: Permitir Coaseguro Cedido, Coaseguro Aceptado
-  //Incluir en el modelo List<CiasSeguros>
+  //TODO Añadir mas tomadores para Consorcio o Union temporal. el de mayor participacion es el tomador si no hay nit ni nombre
 
-
+  ///title: Caracteristicas de la póliza
+  String fechaEmision = DateTime.now().toString(); //Not in the form
+  String vigDesde; //In the form as Date field Vigencia desde hora desde 00:00
+  String vigHasta;  //Not in the form TODO Calcular con la máxima fecha de los amparos
+  String tipoCambio = "Pesos"; //Not in the form
+  //Cobra iva siempre
+  String productoClausulado; //Dropdown in the form "Clausulado1: "Lorem ipsum", "Clausulado2":"Lorem ipsum2", "Clausuado3":"Lorem ipsum3"
+  String descTipoOperacion = "100% Compañia";  //NOT IN THE FORM 100% Compañia, Coaseguro Cedido, Coaseguro Aceptado //Incluir en el modelo List<CiasSeguros>
+  String descTipoPoliza;  // DropdownFormField "Particular, Estatal, Servicios Publicos Domiciliarios, Poliza Ecopetrol, Empresas públicas con régimen privado"
   String descTipoNegocio;
   //Tipo de Negocio: Contrato, contrato de arrendamiento, contrato de consultoria,
   //contrato de ejecucion de obra, contrato de interventoria, contrato de prestacion de servicios
-  int contratante;
-  int objeto;
+
+//--------  Se notifica el temporario con esta informacion ---------------------------------------
+
+  int temporario = 5678; //TODO Revisar la cantidad the caracteres
+  int numPoliza = 1234; //TODO Revisar la cantidad the caracteres
+
+  ///Información del riesgo
+  int nitContratante;
   String numeroContrato;
-  double valorContrato;
-  String fechaInicial;
-  String fechaFinContrato;
-  String fechaFinal;
-  int sincronizar;
+  double valorContrato;  //Nivel anexo
+  int plazoEjecucion; //En años
+  String fechaFinContrato;  //Asignar a vigDesde
+  String objetoSeguro;
+  String textoAclaratorio; //Ver como funciona con un texto largo
+
+  ///Coberturas
+
   List<Amparo> amparos;
+
+
+  //int poliza;  //Consecutivo sistema, revisar si se necesita
+  int estado = 1; //1 Borrador 2. Revision 3. Emision
+
+  
+  //int retroactividad;
+
+  ///Valores totales de la póliza
   int valAsegTotal;
   double primaTotal;
-
   double valComision;
 
 
-  Poliza({this.descAgencia, this.descPuntoVenta, this.descRamo,
-      this.descTipoPoliza, this.poliza, this.fechaEmision, this.numPoliza,
-      this.temporario, this.estado, this.intermediarios, this.comision,
-      this.cupoOperativo, this.afianzado, this.clausulado, this.plazoEjecucion,
-      this.retroactividad, this.descTipoOperacion, this.descTipoNegocio,
-      this.contratante, this.objeto, this.numeroContrato, this.valorContrato,
-      this.fechaInicial, this.fechaFinContrato, this.fechaFinal,
-      this.sincronizar, this.amparos, this.valAsegTotal, this.primaTotal,
-      this.valComision});
+  Poliza({this.descAgencia, this.descPuntoVenta, this.intermediarios,
+      this.comision, this.descRamo, this.tipoDocumento, this.numeroDocumento,
+      this.apellidoRazonSocial, this.cupoOperativo, this.cumuloActual,
+      this.afianzado, this.fechaEmision, this.vigDesde, this.vigHasta,
+      this.tipoCambio, this.productoClausulado, this.descTipoOperacion,
+      this.descTipoPoliza, this.descTipoNegocio, this.temporario,
+      this.numPoliza, this.nitContratante, this.numeroContrato,
+      this.valorContrato, this.plazoEjecucion, this.fechaFinContrato,
+      this.objetoSeguro, this.textoAclaratorio, this.amparos, this.estado,
+      this.valAsegTotal, this.primaTotal, this.valComision});
 
   factory Poliza.fromMap(Map<String, dynamic> json) => new Poliza(
-    poliza: json["poliza"],
-    descAgencia: json["descAgencia"],
-    descPuntoVenta: json["descPuntoVenta"],
-    descRamo: json["descRamo"],
-    descTipoPoliza: json["descTipoPoliza"],
-    fechaEmision: json["fechaEmision"],
-    numPoliza: json["numero"],
-    temporario: json["temporario"],
-    estado: json["estado"],
-
-    //intermediario: json["intermediario"],
-    comision: json["comision"],
-    cupoOperativo: json["cupoOperativo"],
-
-    afianzado: json["afianzado"],
-    clausulado: json["clausulado"],
-    descTipoOperacion: json["descTipoOperacion"],
-    descTipoNegocio: json["descTipoNegocio"],
-
-    plazoEjecucion: json["periodoEmision"],
-    retroactividad: json["retroactividad"],
-
-    contratante: json["contratante"],
-    objeto: json["objeto"],
-    numeroContrato: json["numeroContrato"],
-    valorContrato: json["valorContrato"],
-    fechaInicial: json["fechaInicial"],
-    fechaFinal: json["fechaFinal"],
-    sincronizar: json["sincronizar"],
-
-    valAsegTotal: json["valAsegTotal"],
-    primaTotal: json["primaTotal"],
-    valComision: json["valComision"],
-
+    descAgencia: json["descAgencia"], descPuntoVenta: json["descPuntoVenta"], intermediarios: json["intermediarios"],
+    comision: json["comision"], descRamo: json["descRamo"], tipoDocumento: json["tipoDocumento"], numeroDocumento: json["numeroDocumento"],
+    apellidoRazonSocial: json["apellidoRazonSocial"], cupoOperativo: json["cupoOperativo"], cumuloActual: json["cumuloActual"],
+    afianzado: json["afianzado"], fechaEmision: json["fechaEmision"], vigDesde: json["vigDesde"], vigHasta: json["vigHasta"],
+    tipoCambio: json["tipoCambio"], productoClausulado: json["productoClausulado"], descTipoOperacion: json["descTipoOperacion"],
+    descTipoPoliza: json["descTipoPoliza"], descTipoNegocio: json["descTipoNegocio"], temporario: json["temporario"],
+    numPoliza: json["numPoliza"], nitContratante: json["nitContratante"], numeroContrato: json["numeroContrato"],
+    valorContrato: json["valorContrato"], plazoEjecucion: json["plazoEjecucion"], fechaFinContrato: json["fechaFinContrato"],
+    objetoSeguro: json["objetoSeguro"], textoAclaratorio: json["textoAclaratorio"], amparos: json["amparos"], estado: json["estado"],
+    valAsegTotal: json["valAsegTotal"], primaTotal: json["primaTotal"], valComision: json["valComision"]
   );
 
   Map<String, dynamic> toMap() => {
 
-    "descAgencia": descAgencia,
-    "descPuntoVenta": descPuntoVenta,
-    "descRamo": descRamo,
-    "descTipoPoliza": descTipoPoliza,
-
-    "fechaEmision": fechaEmision,
-    "numero": numPoliza,
-    "temporario": temporario,
-    "estado": estado,
-
-    //"intermediario": intermediarios,
-    "comision": comision,
-    "cupoOperativo": cupoOperativo,
-
-    "afianzado": afianzado,
-    "clausulado": clausulado,
-    "descTipoOperacion": descTipoOperacion,
-    "descTipoNegocio": descTipoNegocio,
-
-    "periodoEmision": plazoEjecucion,
-    "retroactividad": retroactividad,
-
-    "contratante": contratante,
-    "objeto": objeto,
-    "numeroContrato": numeroContrato,
-    "valorContrato": valorContrato,
-    "fechaInicial": fechaInicial,
-    "fechaFinal": fechaFinal,
-    "valAsegTotal": valAsegTotal,
-    "primaTotal": primaTotal,
-    "valComision": valComision,
-
+  "descAgencia": descAgencia , "descPuntoVenta": descPuntoVenta , "intermediarios" : intermediarios,
+  "comision": comision, "descRamo" : descRamo , "tipoDocumento" : tipoDocumento , "numeroDocumento" : numeroDocumento,
+  "apellidoRazonSocial" : apellidoRazonSocial, "cupoOperativo" : cupoOperativo, "cumuloActual" : cumuloActual,
+  "afianzado" : afianzado , "fechaEmision": fechaEmision, "vigDesde": vigDesde, "vigHasta": vigHasta,
+  "tipoCambio": tipoCambio, "productoClausulado": productoClausulado, "descTipoOperacion": descTipoOperacion,
+  "descTipoPoliza": descTipoPoliza, "descTipoNegocio": descTipoNegocio, "temporario": temporario,
+  "numPoliza": numPoliza, "nitContratante": nitContratante, "numeroContrato": numeroContrato,
+  "valorContrato": valorContrato, "plazoEjecucion": plazoEjecucion, "fechaFinContrato": fechaFinContrato,
+  "objetoSeguro": objetoSeguro, "textoAclaratorio": textoAclaratorio, "amparos": amparos, "estado": estado,
+  "valAsegTotal": valAsegTotal, "primaTotal": primaTotal, "valComision": valComision,
   };
 }
 
