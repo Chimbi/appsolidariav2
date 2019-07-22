@@ -1,10 +1,8 @@
 import 'dart:convert';
 
 import 'package:appsolidariav2/model/user.dart';
-import 'package:appsolidariav2/shared/state/state.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -13,15 +11,13 @@ import 'package:http/http.dart' as http;
 
 List<User> users = new List<User>();
 
-class Page1ViewModel {
-  final Page1FormState page1formState;
-  final Function() onSave;
+class Clausulado{
+  String prodClausulado;
+  String textoClausulado;
 
-  Page1ViewModel({
-    this.page1formState,
-    this.onSave,
-  });
+  Clausulado(this.prodClausulado, this.textoClausulado);
 }
+
 
 class Page1 extends StatefulWidget {
   @override
@@ -29,8 +25,11 @@ class Page1 extends StatefulWidget {
 }
 
 class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
+
+
   String tipoPolizaValue;
   String tipoNegocioValue;
+  Clausulado clausuladoValue;
 
   DateFormat
       dateFormat; //DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"); //DateFormat('dd-MM-yyyy'); DateFormat.yMMMd()
@@ -41,10 +40,12 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
   TextEditingController periodoController = TextEditingController();
   TextEditingController cupoController = TextEditingController();
 
-  DateTime _fromDate = DateTime.now();
-  DateTime _fromDate1;
   DateTime _fechaEmision = DateTime.now();
+  DateTime _fromDate1;
   DateTime minDate;
+
+  ///Listado Producto Clausulado
+  List<Clausulado> prodClausulado = <Clausulado>[Clausulado("Decreto123","Lorem ipsum1"),Clausulado("Decreto456","Lorem ipsum2")];
 
   List<String> tipoPoliza = [
     "Particular",
@@ -93,7 +94,9 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
     getUsers();
     initializeDateFormatting();
     dateFormat = new DateFormat('dd-MM-yyyy'); //new DateFormat.yMMMMd('es');
-    minDate = DateTime(_fromDate.year - 1, _fromDate.month, _fromDate.day);
+    ///Define fecha mínima como control del sistema.
+    minDate = DateTime(
+        _fechaEmision.year, _fechaEmision.month - 5, _fechaEmision.day);
     super.initState();
   }
 
@@ -103,7 +106,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
 
     return Container(
       child: Card(
-        margin: EdgeInsets.all(10.0),
+        margin: EdgeInsets.all(12.0),
         child: ListView(
           children: <Widget>[
             Center(
@@ -111,28 +114,6 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
               "Datos Básicos",
               style: TextStyle(fontSize: 16.0, color: Colors.blue),
             )),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                  labelText: "Type of business", icon: Icon(Icons.store)),
-              value: tipoPolizaValue,
-              onChanged: (String newValue) {
-                setState(() {
-                  tipoPolizaValue = newValue;
-                });
-              },
-              validator: (String value) {
-                if (value?.isEmpty ?? true) {
-                  return 'Favor ingrese el tipo de negocio';
-                }
-              },
-              items: tipoPoliza.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onSaved: (val) => setState(() => userObj.typeNeg = val),
-            ),
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -186,6 +167,123 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
+              child: DateTimePickerFormField(
+                decoration: InputDecoration(icon: Icon(Icons.date_range),labelText: 'Vigencia Desde /From'),
+                controller: initialDate,
+                format: dateFormat,
+                enabled: true,
+                dateOnly: true,
+                validator: (value) {
+                  if (value == null) {
+                    return 'Debe ingresar una fecha inicial valida';
+                  } else if (minDate.isAfter(value)) {
+                    return 'Retroactividad máxima superada';
+                  }
+                },
+                onChanged: (DateTime date) {
+                  setState(() {
+                    _fromDate1 = date;
+                    //initialDate.text = date.toString();
+                    //finalDate is the controller for the next date
+                    finalDate.text = initialDate.text != ""
+                        ? initialDate.text.substring(0, 2) +
+                            "-" +
+                            initialDate.text.substring(3, 5) +
+                            "-" +
+                            (int.parse(initialDate.text.substring(6, 10)) +
+                                    int.parse(periodoController.text))
+                                .toString()
+                        : "";
+                    print("initialDate: ${initialDate.text}");
+                  });
+                },
+                onFieldSubmitted: (DateTime date) {
+                  setState(() {
+                    _fromDate1 = date;
+                  });
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DropdownButtonFormField<Clausulado>(
+                decoration: InputDecoration(
+                    labelText: "Clausulado", icon: Icon(Icons.text_fields)),
+                value: clausuladoValue,
+                onChanged: (Clausulado newValue) {
+                  setState(() {
+                    clausuladoValue = newValue;
+                    print("clausulado value ${clausuladoValue.textoClausulado}");
+                  });
+                },
+                validator: (Clausulado value) {
+                  if (value == null ?? true) {
+                    return 'Favor seleccione un clausulado';
+                  }
+                },
+                items: prodClausulado.map((Clausulado value) {
+                  return DropdownMenuItem<Clausulado>(
+                    value: value,
+                    child: Text(value.prodClausulado),
+                  );
+                }).toList(),
+                onSaved: (val) => setState((){
+                  userObj.typeNeg = val.textoClausulado;
+                }),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DropdownButtonFormField<String>(
+                decoration: InputDecoration(
+                    labelText: "Tipo de poliza", icon: Icon(Icons.book)),
+                value: tipoPolizaValue,
+                onChanged: (String newValue) {
+                  setState(() {
+                    tipoPolizaValue = newValue;
+                  });
+                },
+                validator: (String value) {
+                  if (value?.isEmpty ?? true) {
+                    return 'Favor ingrese el tipo de poliza';
+                  }
+                },
+                items: tipoPoliza.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onSaved: (val) => setState(() => userObj.typeNeg = val),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DropdownButtonFormField<String>(
+                decoration: InputDecoration(
+                    labelText: "Tipo de negocio", icon: Icon(Icons.store)),
+                value: tipoNegocioValue,
+                onChanged: (String newValue) {
+                  setState(() {
+                    tipoNegocioValue = newValue;
+                  });
+                },
+                validator: (String value) {
+                  if (value?.isEmpty ?? true) {
+                    return 'Favor ingrese el tipo de negocio';
+                  }
+                },
+                items: tipoNeg.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onSaved: (val) => setState(() => userObj.typeNeg = val),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
               child: TextFormField(
                 controller: cupoController,
                 decoration: InputDecoration(
@@ -200,34 +298,14 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                 onSaved: (val) => setState(() => userObj.name = val),
               ),
             ),
-            SizedBox(height: 30,),
+            SizedBox(
+              height: 30,
+            ),
             Center(
                 child: Text(
               "Datos del contrato",
               style: TextStyle(fontSize: 16.0, color: Colors.blue),
             )),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                  labelText: "Type of business", icon: Icon(Icons.store)),
-              value: tipoNegocioValue,
-              onChanged: (String newValue) {
-                setState(() {
-                  tipoNegocioValue = newValue;
-                });
-              },
-              validator: (String value) {
-                if (value?.isEmpty ?? true) {
-                  return 'Favor ingrese el tipo de negocio';
-                }
-              },
-              items: tipoNeg.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onSaved: (val) => setState(() => userObj.typeNeg = val),
-            ),
             TextFormField(
               controller: periodoController,
               decoration: InputDecoration(
@@ -240,42 +318,6 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
               },
               onSaved: (val) =>
                   setState(() => userObj.periodo = int.parse(val)),
-            ),
-            DateTimePickerFormField(
-              decoration: InputDecoration(labelText: 'Fecha inicio /From'),
-              controller: initialDate,
-              format: dateFormat,
-              enabled: true,
-              dateOnly: true,
-              validator: (value) {
-                if (value == null) {
-                  return 'Debe ingresar una fecha valida de contrato';
-                } else if (minDate.isAfter(value)) {
-                  return 'Retroactividad máxima superada';
-                }
-              },
-              onChanged: (DateTime date) {
-                setState(() {
-                  _fromDate1 = date;
-                  //initialDate.text = date.toString();
-                  //finalDate is the controller for the next date
-                  finalDate.text = initialDate.text != ""
-                      ? initialDate.text.substring(0, 2) +
-                          "-" +
-                          initialDate.text.substring(3, 5) +
-                          "-" +
-                          (int.parse(initialDate.text.substring(6, 10)) +
-                                  int.parse(periodoController.text))
-                              .toString()
-                      : "";
-                  print("initialDate: ${initialDate.text}");
-                });
-              },
-              onFieldSubmitted: (DateTime date) {
-                setState(() {
-                  _fromDate1 = date;
-                });
-              },
             ),
             DateTimePickerFormField(
               onSaved: (value) => print("Voy a hacer algo despues"),

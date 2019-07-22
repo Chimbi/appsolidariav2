@@ -53,7 +53,6 @@ class Afianzado {
 
   bool sincronizar;
 
-
   Afianzado({this.auxiliar, this.descClasificacion, this.descTipo,
       this.identificacion, this.primerNombre, this.segundoNombre,
       this.primerApellido, this.segundoApellido, this.favorito, this.foto,

@@ -44,7 +44,7 @@ class PaginaInicio extends StatelessWidget {
               padding: EdgeInsets.fromLTRB(0.0,60.0,0.0,8.0),
               alignment: Alignment.topCenter,
               child: Image.asset(
-                "assets/logo.png",
+                "assets/logo1.png",
                 scale: 0.9,
               ),
             ),

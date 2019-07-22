@@ -44,7 +44,7 @@ class Poliza {
   //version 1: 1 Afianzado version2: varios afianzados
   
 
-  //TODO Añadir mas tomadores para Consorcio o Union temporal. el de mayor participacion es el tomador si no hay nit ni nombre
+//TODO Añadir mas tomadores para Consorcio o temporal. el de mayor participacion es el tomador si no hay nit ni nombre
 
   ///title: Caracteristicas de la póliza
   String fechaEmision = DateTime.now().toString(); //Not in the form
@@ -53,6 +53,7 @@ class Poliza {
   String tipoCambio = "Pesos"; //Not in the form
   //Cobra iva siempre
   String productoClausulado; //Dropdown in the form "Clausulado1: "Lorem ipsum", "Clausulado2":"Lorem ipsum2", "Clausuado3":"Lorem ipsum3"
+  String textoClausulado;
   String descTipoOperacion = "100% Compañia";  //NOT IN THE FORM 100% Compañia, Coaseguro Cedido, Coaseguro Aceptado //Incluir en el modelo List<CiasSeguros>
   String descTipoPoliza;  // DropdownFormField "Particular, Estatal, Servicios Publicos Domiciliarios, Poliza Ecopetrol, Empresas públicas con régimen privado"
   String descTipoNegocio;
@@ -89,12 +90,11 @@ class Poliza {
   double primaTotal;
   double valComision;
 
-
   Poliza({this.descAgencia, this.descPuntoVenta, this.intermediarios,
       this.comision, this.descRamo, this.tipoDocumento, this.numeroDocumento,
       this.apellidoRazonSocial, this.cupoOperativo, this.cumuloActual,
-      this.afianzado, this.fechaEmision, this.vigDesde, this.vigHasta,
-      this.tipoCambio, this.productoClausulado, this.descTipoOperacion,
+      this.fechaEmision, this.vigDesde, this.vigHasta,
+      this.tipoCambio, this.productoClausulado, this.textoClausulado, this.descTipoOperacion,
       this.descTipoPoliza, this.descTipoNegocio, this.temporario,
       this.numPoliza, this.nitContratante, this.numeroContrato,
       this.valorContrato, this.plazoEjecucion, this.fechaFinContrato,
@@ -105,8 +105,8 @@ class Poliza {
     descAgencia: json["descAgencia"], descPuntoVenta: json["descPuntoVenta"], intermediarios: json["intermediarios"],
     comision: json["comision"], descRamo: json["descRamo"], tipoDocumento: json["tipoDocumento"], numeroDocumento: json["numeroDocumento"],
     apellidoRazonSocial: json["apellidoRazonSocial"], cupoOperativo: json["cupoOperativo"], cumuloActual: json["cumuloActual"],
-    afianzado: json["afianzado"], fechaEmision: json["fechaEmision"], vigDesde: json["vigDesde"], vigHasta: json["vigHasta"],
-    tipoCambio: json["tipoCambio"], productoClausulado: json["productoClausulado"], descTipoOperacion: json["descTipoOperacion"],
+    fechaEmision: json["fechaEmision"], vigDesde: json["vigDesde"], vigHasta: json["vigHasta"],
+    tipoCambio: json["tipoCambio"], productoClausulado: json["productoClausulado"],textoClausulado: json["textoClausulado"], descTipoOperacion: json["descTipoOperacion"],
     descTipoPoliza: json["descTipoPoliza"], descTipoNegocio: json["descTipoNegocio"], temporario: json["temporario"],
     numPoliza: json["numPoliza"], nitContratante: json["nitContratante"], numeroContrato: json["numeroContrato"],
     valorContrato: json["valorContrato"], plazoEjecucion: json["plazoEjecucion"], fechaFinContrato: json["fechaFinContrato"],
@@ -119,8 +119,8 @@ class Poliza {
   "descAgencia": descAgencia , "descPuntoVenta": descPuntoVenta , "intermediarios" : intermediarios,
   "comision": comision, "descRamo" : descRamo , "tipoDocumento" : tipoDocumento , "numeroDocumento" : numeroDocumento,
   "apellidoRazonSocial" : apellidoRazonSocial, "cupoOperativo" : cupoOperativo, "cumuloActual" : cumuloActual,
-  "afianzado" : afianzado , "fechaEmision": fechaEmision, "vigDesde": vigDesde, "vigHasta": vigHasta,
-  "tipoCambio": tipoCambio, "productoClausulado": productoClausulado, "descTipoOperacion": descTipoOperacion,
+  "fechaEmision": fechaEmision, "vigDesde": vigDesde, "vigHasta": vigHasta,
+  "tipoCambio": tipoCambio, "productoClausulado": productoClausulado, "textoClausulado":textoClausulado, "descTipoOperacion": descTipoOperacion,
   "descTipoPoliza": descTipoPoliza, "descTipoNegocio": descTipoNegocio, "temporario": temporario,
   "numPoliza": numPoliza, "nitContratante": nitContratante, "numeroContrato": numeroContrato,
   "valorContrato": valorContrato, "plazoEjecucion": plazoEjecucion, "fechaFinContrato": fechaFinContrato,

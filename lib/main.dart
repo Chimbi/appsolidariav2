@@ -3,6 +3,7 @@ import 'package:appsolidariav2/screens/pdf/pdfmain.dart';
 import 'package:appsolidariav2/screens/poliza.dart';
 import 'package:appsolidariav2/screens/terceros.dart';
 import 'package:appsolidariav2/screens/temp.dart';
+import 'package:appsolidariav2/theme/style.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,9 +19,7 @@ class MyApp extends StatelessWidget {
       builder: (context) => User(),
       child: MaterialApp(
         title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
+        theme: appTheme(),
         initialRoute: '/',
         routes: {
           // When navigating to the "/" route, build the FirstScreen widget.
