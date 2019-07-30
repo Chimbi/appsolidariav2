@@ -1,6 +1,9 @@
 import 'dart:convert';
 
+import 'package:appsolidariav2/model/amparoModel.dart';
+import 'package:appsolidariav2/model/polizaModel.dart';
 import 'package:appsolidariav2/model/user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -18,6 +21,68 @@ class Clausulado{
   Clausulado(this.prodClausulado, this.textoClausulado);
 }
 
+class Page0 extends StatefulWidget {
+  @override
+  _Page0State createState() => _Page0State();
+}
+
+class _Page0State extends State<Page0> with AutomaticKeepAliveClientMixin {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text("Favor ingresar las partes involucradas"),
+        ),
+        Card(
+          elevation: 8.0,
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: TextFormField(
+                  decoration: InputDecoration(labelText: 'City'),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'City is required!';
+                    }
+                    return "";
+                  },
+                  onSaved: (value) {
+                    print("Onsave Called for City");
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: TextFormField(
+                  decoration: InputDecoration(labelText: 'Country'),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Country is required!';
+                    }
+                    return "";
+                  },
+                  onSaved: (value) {
+                    print("Onsave Called for Country");
+                  },
+                ),
+              ),
+              SizedBox(
+                height: 30,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
+}
 
 class Page1 extends StatefulWidget {
   @override
@@ -55,15 +120,17 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
     "E.Publicas R.Privado"
   ];
   List<String> tipoNeg = [
-    "Prestacion de servicios",
+    "Prestación de servicios",
     "Suministro",
-    "Consultoria",
-    "Interventoria",
+    "Consultoría",
+    "Interventoría",
     "Obra",
     "Suministro Repuestos",
   ];
+
   bool loading = true;
   final _user = User();
+  final _poliza = Poliza();
   User selectedUser;
 
   void getUsers() async {
@@ -89,6 +156,9 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
     return parsed.map<User>((json) => User.fromJson(json)).toList();
   }
 
+  List<Amparo> amparos = List();
+  DocumentSnapshot amparosMap;
+
   @override
   void initState() {
     getUsers();
@@ -97,260 +167,280 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
     ///Define fecha mínima como control del sistema.
     minDate = DateTime(
         _fechaEmision.year, _fechaEmision.month - 5, _fechaEmision.day);
+    periodoController.text = "1";
     super.initState();
   }
 
   @override
-  Widget build(BuildContext context) {
-    var userObj = Provider.of<User>(context);
+  Widget build(BuildContext context){
+    var polizaObj = Provider.of<Poliza>(context);
 
-    return Container(
-      child: Card(
-        margin: EdgeInsets.all(12.0),
-        child: ListView(
-          children: <Widget>[
-            Center(
-                child: Text(
-              "Datos Básicos",
-              style: TextStyle(fontSize: 16.0, color: Colors.blue),
-            )),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: loading
-                    ? CircularProgressIndicator()
-                    : SimpleAutocompleteFormField<User>(
-                        decoration: InputDecoration(
-                            labelText: 'User/ Afianzado',
-                            icon: Icon(Icons.person)),
-                        suggestionsHeight: 80.0,
-                        itemBuilder: (context, user) => Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(user.name,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold)),
-                                    Text(user.email)
-                                  ]),
-                            ),
-                        onSearch: (search) async => users
-                            .where((user) =>
-                                user.name
-                                    .toLowerCase()
-                                    .contains(search.toLowerCase()) ||
-                                user.email
-                                    .toLowerCase()
-                                    .contains(search.toLowerCase()))
-                            .toList(),
-                        itemFromString: (string) => users.singleWhere(
-                            (user) =>
-                                user.name.toLowerCase() == string.toLowerCase(),
-                            orElse: () => null),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedUser = value;
+    return Card(
+      elevation: 8.0,
+      child: Column(
+        children: <Widget>[
+          Center(
+              child: Text(
+            "Datos Básicos",
+            style: TextStyle(fontSize: 16.0, color: Colors.blue),
+          )),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: loading
+                  ? CircularProgressIndicator()
+                  : SimpleAutocompleteFormField<User>(
+                      decoration: InputDecoration(
+                          labelText: 'User/ Afianzado',
+                          icon: Icon(Icons.person)),
+                      suggestionsHeight: 80.0,
+                      itemBuilder: (context, user) => Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(user.name,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                  Text(user.email)
+                                ]),
+                          ),
+                      onSearch: (search) async => users
+                          .where((user) =>
+                              user.name
+                                  .toLowerCase()
+                                  .contains(search.toLowerCase()) ||
+                              user.email
+                                  .toLowerCase()
+                                  .contains(search.toLowerCase()))
+                          .toList(),
+                      itemFromString: (string) => users.singleWhere(
+                          (user) =>
+                              user.name.toLowerCase() == string.toLowerCase(),
+                          orElse: () => null),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedUser = value;
+                          if(value != null){
                             cupoController.text = value.email;
-                          });
-                        },
-                        onSaved: (value) => setState(() {
-                              selectedUser = value;
-                              userObj.name = value.name;
-                              print(
-                                  "Selected user email ${selectedUser.email}");
-                            }),
-                        validator: (user) =>
-                            user == null ? 'El Afianzado no existe.' : null,
-                      ),
-              ),
+                          }
+                        });
+                      },
+                      onSaved: (value) => setState(() {
+                            selectedUser = value;
+                            polizaObj.apellidoRazonSocial = value.name;
+                            print(
+                                "Selected user email ${selectedUser.email}");
+                          }),
+                      validator: (user) =>
+                          user == null ? 'El Afianzado no existe.' : null,
+                    ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DateTimePickerFormField(
-                decoration: InputDecoration(icon: Icon(Icons.date_range),labelText: 'Vigencia Desde /From'),
-                controller: initialDate,
-                format: dateFormat,
-                enabled: true,
-                dateOnly: true,
-                validator: (value) {
-                  if (value == null) {
-                    return 'Debe ingresar una fecha inicial valida';
-                  } else if (minDate.isAfter(value)) {
-                    return 'Retroactividad máxima superada';
-                  }
-                },
-                onChanged: (DateTime date) {
-                  setState(() {
-                    _fromDate1 = date;
-                    //initialDate.text = date.toString();
-                    //finalDate is the controller for the next date
-                    finalDate.text = initialDate.text != ""
-                        ? initialDate.text.substring(0, 2) +
-                            "-" +
-                            initialDate.text.substring(3, 5) +
-                            "-" +
-                            (int.parse(initialDate.text.substring(6, 10)) +
-                                    int.parse(periodoController.text))
-                                .toString()
-                        : "";
-                    print("initialDate: ${initialDate.text}");
-                  });
-                },
-                onFieldSubmitted: (DateTime date) {
-                  setState(() {
-                    _fromDate1 = date;
-                  });
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DropdownButtonFormField<Clausulado>(
-                decoration: InputDecoration(
-                    labelText: "Clausulado", icon: Icon(Icons.text_fields)),
-                value: clausuladoValue,
-                onChanged: (Clausulado newValue) {
-                  setState(() {
-                    clausuladoValue = newValue;
-                    print("clausulado value ${clausuladoValue.textoClausulado}");
-                  });
-                },
-                validator: (Clausulado value) {
-                  if (value == null ?? true) {
-                    return 'Favor seleccione un clausulado';
-                  }
-                },
-                items: prodClausulado.map((Clausulado value) {
-                  return DropdownMenuItem<Clausulado>(
-                    value: value,
-                    child: Text(value.prodClausulado),
-                  );
-                }).toList(),
-                onSaved: (val) => setState((){
-                  userObj.typeNeg = val.textoClausulado;
-                }),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DropdownButtonFormField<String>(
-                decoration: InputDecoration(
-                    labelText: "Tipo de poliza", icon: Icon(Icons.book)),
-                value: tipoPolizaValue,
-                onChanged: (String newValue) {
-                  setState(() {
-                    tipoPolizaValue = newValue;
-                  });
-                },
-                validator: (String value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Favor ingrese el tipo de poliza';
-                  }
-                },
-                items: tipoPoliza.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onSaved: (val) => setState(() => userObj.typeNeg = val),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DropdownButtonFormField<String>(
-                decoration: InputDecoration(
-                    labelText: "Tipo de negocio", icon: Icon(Icons.store)),
-                value: tipoNegocioValue,
-                onChanged: (String newValue) {
-                  setState(() {
-                    tipoNegocioValue = newValue;
-                  });
-                },
-                validator: (String value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Favor ingrese el tipo de negocio';
-                  }
-                },
-                items: tipoNeg.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onSaved: (val) => setState(() => userObj.typeNeg = val),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: cupoController,
-                decoration: InputDecoration(
-                    labelText: 'Budget /Cupo Disponible',
-                    icon: Icon(Icons.attach_money)),
-                enabled: true,
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Debe verificarse el cupo';
-                  }
-                },
-                onSaved: (val) => setState(() => userObj.name = val),
-              ),
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            Center(
-                child: Text(
-              "Datos del contrato",
-              style: TextStyle(fontSize: 16.0, color: Colors.blue),
-            )),
-            TextFormField(
-              controller: periodoController,
-              decoration: InputDecoration(
-                  labelText: 'Period /Período en años',
-                  icon: Icon(Icons.access_time)),
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Período inválido';
-                }
-              },
-              onSaved: (val) =>
-                  setState(() => userObj.periodo = int.parse(val)),
-            ),
-            DateTimePickerFormField(
-              onSaved: (value) => print("Voy a hacer algo despues"),
-              decoration: InputDecoration(labelText: 'Fecha final /To'),
-              //firstDate: _fromDate1,
-              controller: finalDate,
-              initialDate: (_fromDate1 != null && periodoController.text != "")
-                  ? DateTime(
-                      _fromDate1.year + int.parse(periodoController.text),
-                      _fromDate1.month,
-                      _fromDate1.day)
-                  : DateTime.now(),
-              initialValue: (finalDate.text != "" &&
-                      periodoController.text != "")
-                  ? DateTime.parse((int.parse(finalDate.text.substring(6, 10)) +
-                              int.parse(periodoController.text))
-                          .toString() +
-                      finalDate.text.substring(3, 5) +
-                      finalDate.text.substring(0, 2))
-                  : DateTime.now(),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DateTimePickerFormField(
+              decoration: InputDecoration(icon: Icon(Icons.date_range),labelText: 'Vigencia Desde /From'),
+              controller: initialDate,
               format: dateFormat,
               enabled: true,
               dateOnly: true,
               validator: (value) {
                 if (value == null) {
-                  return 'Debe ingresar una fecha valida de contrato';
+                  return 'Debe ingresar una fecha inicial valida';
                 } else if (minDate.isAfter(value)) {
                   return 'Retroactividad máxima superada';
                 }
+                return "";
               },
-            )
-          ],
-        ),
+              onChanged: (DateTime date) {
+                setState(() {
+                  _fromDate1 = date;
+                  //initialDate.text = date.toString();
+                  //finalDate is the controller for the next date
+                  finalDate.text = initialDate.text != ""
+                      ? initialDate.text.substring(0, 2) +
+                          "-" +
+                          initialDate.text.substring(3, 5) +
+                          "-" +
+                          (int.parse(initialDate.text.substring(6, 10)) +
+                                  int.parse(periodoController.text))
+                              .toString()
+                      : "";
+                  print("initialDate: ${initialDate.text}");
+                  polizaObj.vigDesde = initialDate.text;
+                  polizaObj.notifyListeners();
+                });
+              },
+              onFieldSubmitted: (DateTime date) {
+                setState(() {
+                  _fromDate1 = date;
+                  polizaObj.vigDesde = date.toString();
+                });
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DropdownButtonFormField<Clausulado>(
+              decoration: InputDecoration(
+                  labelText: "Clausulado", icon: Icon(Icons.text_fields)),
+              value: clausuladoValue,
+              onChanged: (Clausulado newValue) {
+                setState(() {
+                  clausuladoValue = newValue;
+                  print("clausulado value ${clausuladoValue.textoClausulado}");
+                });
+              },
+              validator: (Clausulado value) {
+                if (value == null ?? true) {
+                  return 'Favor seleccione un clausulado';
+                }
+                return "";
+              },
+              items: prodClausulado.map((Clausulado value) {
+                return DropdownMenuItem<Clausulado>(
+                  value: value,
+                  child: Text(value.prodClausulado),
+                );
+              }).toList(),
+              onSaved: (val) => setState((){
+                polizaObj.textoClausulado = val.textoClausulado;
+                polizaObj.productoClausulado = val.prodClausulado;
+              }),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                  labelText: "Tipo de poliza", icon: Icon(Icons.book)),
+              value: tipoPolizaValue,
+              onChanged: (String newValue) {
+                setState(() {
+                  tipoPolizaValue = newValue;
+                });
+              },
+              validator: (String value) {
+                if (value?.isEmpty ?? true) {
+                  return 'Favor ingrese el tipo de poliza';
+                }
+                return "";
+              },
+              items: tipoPoliza.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onSaved: (val) => setState(() => polizaObj.descTipoPoliza = val),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                  labelText: "Tipo de negocio", icon: Icon(Icons.store)),
+              value: tipoNegocioValue,
+              onChanged: (String newValue) async {
+                amparos = List();
+                amparosMap = await getAmparos(newValue);
+                amparosMap.data.forEach((key,value){
+                  amparos.add(Amparo.fromMap(value.cast<String,dynamic>()));
+                });
+                setState(() {
+                  tipoNegocioValue = newValue;
+                  polizaObj.amparos = amparos;
+                  //Notify listeners updates the object and refresh all the UI
+                  polizaObj.notifyListeners();
+                });
+              },
+              validator: (String value) {
+                if (value?.isEmpty ?? true) {
+                  return 'Favor ingrese el tipo de negocio';
+                }
+                return "";
+              },
+              items: tipoNeg.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onSaved: (val) => setState(() => polizaObj.descTipoNegocio = val),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              controller: cupoController,
+              decoration: InputDecoration(
+                  labelText: 'Budget /Cupo Disponible',
+                  icon: Icon(Icons.attach_money)),
+              enabled: true,
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Debe verificarse el cupo';
+                }
+                return "";
+              },
+              onSaved: (val) => setState(() => polizaObj.cupoDisponible = int.parse(val)),
+            ),
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          /*
+          Center(
+              child: Text(
+            "Datos del contrato",
+            style: TextStyle(fontSize: 16.0, color: Colors.blue),
+          )),
+          TextFormField(
+            controller: periodoController,
+            decoration: InputDecoration(
+                labelText: 'Period /Período en años',
+                icon: Icon(Icons.access_time)),
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Período inválido';
+              }
+            },
+            onSaved: (val) =>
+                setState(() => userObj.periodo = int.parse(val)),
+          ),
+          DateTimePickerFormField(
+            onSaved: (value) => print("Voy a hacer algo despues"),
+            decoration: InputDecoration(labelText: 'Fecha final /To'),
+            //firstDate: _fromDate1,
+            controller: finalDate,
+            initialDate: (_fromDate1 != null && periodoController.text != "")
+                ? DateTime(
+                    _fromDate1.year + int.parse(periodoController.text),
+                    _fromDate1.month,
+                    _fromDate1.day)
+                : DateTime.now(),
+            initialValue: (finalDate.text != "" &&
+                    periodoController.text != "")
+                ? DateTime.parse((int.parse(finalDate.text.substring(6, 10)) +
+                            int.parse(periodoController.text))
+                        .toString() +
+                    finalDate.text.substring(3, 5) +
+                    finalDate.text.substring(0, 2))
+                : DateTime.now(),
+            format: dateFormat,
+            enabled: true,
+            dateOnly: true,
+            validator: (value) {
+              if (value == null) {
+                return 'Debe ingresar una fecha valida de contrato';
+              } else if (minDate.isAfter(value)) {
+                return 'Retroactividad máxima superada';
+              }
+            },
+          )
+          */
+        ],
       ),
     );
   }
@@ -358,4 +448,11 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
+
+  Future<DocumentSnapshot> getAmparos(String newValue) async{
+    return Firestore.instance
+        .collection("tipoNeg")
+        .document("$newValue")
+        .get();
+  }
 }
