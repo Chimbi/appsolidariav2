@@ -7,6 +7,7 @@ import 'package:appsolidariav2/theme/style.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'model/polizaModel.dart';
 import 'model/user.dart';
 
 void main() => runApp(MyApp());
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      builder: (context) => User(),
+      builder: (context) => Poliza(),
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: appTheme(),

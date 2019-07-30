@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:appsolidariav2/model/afianzaModel.dart';
 import 'package:appsolidariav2/model/amparoModel.dart';
 import 'package:appsolidariav2/model/intermedModel.dart';
+import 'package:flutter/foundation.dart';
 
 Poliza polizaFromJson(String str) {
   final jsonData = json.decode(str);
@@ -13,7 +14,7 @@ String polizaToJson(Poliza data) {
   return json.encode(dyn);
 }
 
-class Poliza {
+class Poliza with ChangeNotifier{
   ///NOT in the Form  Informacion del punto de venta de emisión
   String descAgencia = "Agencia Bogota";
   String descPuntoVenta = "AC Seguros Ltda";
@@ -38,7 +39,7 @@ class Poliza {
   ///CupoOperativo and cumulo actual are in the form as text when you get the info of the afianzado
   int cupoOperativo; // Comes from the Afianzado
   int cumuloActual;  //Comes from the Afianzado
-  //Cupo disponible = cupoOperativo - cumuloActual
+  int cupoDisponible; // = cupoOperativo - cumuloActual;
 
   //Afianzado afianzado;
   //version 1: 1 Afianzado version2: varios afianzados
@@ -71,12 +72,12 @@ class Poliza {
   double valorContrato;  //Nivel anexo
   int plazoEjecucion; //En años
   String fechaFinContrato;  //Asignar a vigDesde
-  String objetoSeguro;
+  String objetoSeguro;  //Contrato, Orden compra, Orden servicio, Orden suministro, Factura venta, Pliego condiciones
   String textoAclaratorio; //Ver como funciona con un texto largo
 
   ///Coberturas
 
-  List<Amparo> amparos;
+  List<Amparo> amparos = [];
 
 
   //int poliza;  //Consecutivo sistema, revisar si se necesita
@@ -92,7 +93,7 @@ class Poliza {
 
   Poliza({this.descAgencia, this.descPuntoVenta, this.intermediarios,
       this.comision, this.descRamo, this.tipoDocumento, this.numeroDocumento,
-      this.apellidoRazonSocial, this.cupoOperativo, this.cumuloActual,
+      this.apellidoRazonSocial, this.cupoOperativo, this.cumuloActual, this.cupoDisponible,
       this.fechaEmision, this.vigDesde, this.vigHasta,
       this.tipoCambio, this.productoClausulado, this.textoClausulado, this.descTipoOperacion,
       this.descTipoPoliza, this.descTipoNegocio, this.temporario,
@@ -104,7 +105,7 @@ class Poliza {
   factory Poliza.fromMap(Map<String, dynamic> json) => new Poliza(
     descAgencia: json["descAgencia"], descPuntoVenta: json["descPuntoVenta"], intermediarios: json["intermediarios"],
     comision: json["comision"], descRamo: json["descRamo"], tipoDocumento: json["tipoDocumento"], numeroDocumento: json["numeroDocumento"],
-    apellidoRazonSocial: json["apellidoRazonSocial"], cupoOperativo: json["cupoOperativo"], cumuloActual: json["cumuloActual"],
+    apellidoRazonSocial: json["apellidoRazonSocial"], cupoOperativo: json["cupoOperativo"], cumuloActual: json["cumuloActual"],cupoDisponible: json["cupoDisponible"],
     fechaEmision: json["fechaEmision"], vigDesde: json["vigDesde"], vigHasta: json["vigHasta"],
     tipoCambio: json["tipoCambio"], productoClausulado: json["productoClausulado"],textoClausulado: json["textoClausulado"], descTipoOperacion: json["descTipoOperacion"],
     descTipoPoliza: json["descTipoPoliza"], descTipoNegocio: json["descTipoNegocio"], temporario: json["temporario"],
@@ -118,7 +119,7 @@ class Poliza {
 
   "descAgencia": descAgencia , "descPuntoVenta": descPuntoVenta , "intermediarios" : intermediarios,
   "comision": comision, "descRamo" : descRamo , "tipoDocumento" : tipoDocumento , "numeroDocumento" : numeroDocumento,
-  "apellidoRazonSocial" : apellidoRazonSocial, "cupoOperativo" : cupoOperativo, "cumuloActual" : cumuloActual,
+  "apellidoRazonSocial" : apellidoRazonSocial, "cupoOperativo" : cupoOperativo, "cumuloActual" : cumuloActual, "cupoDisponible":cupoDisponible,
   "fechaEmision": fechaEmision, "vigDesde": vigDesde, "vigHasta": vigHasta,
   "tipoCambio": tipoCambio, "productoClausulado": productoClausulado, "textoClausulado":textoClausulado, "descTipoOperacion": descTipoOperacion,
   "descTipoPoliza": descTipoPoliza, "descTipoNegocio": descTipoNegocio, "temporario": temporario,

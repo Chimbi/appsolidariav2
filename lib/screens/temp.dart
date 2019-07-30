@@ -1,3 +1,4 @@
+import 'package:appsolidariav2/model/polizaModel.dart';
 import 'package:appsolidariav2/model/user.dart';
 import 'package:appsolidariav2/screens/page1.dart';
 import 'package:appsolidariav2/screens/page2.dart';
@@ -34,7 +35,7 @@ class __PageSelectorState extends State<_PageSelector>
     final TabController controller = DefaultTabController.of(context);
     final Color color = Theme.of(context).accentColor;
 
-    var userObj = Provider.of<User>(context);
+    var userObj = Provider.of<Poliza>(context);
 
     return SafeArea(
       top: false,
@@ -96,7 +97,7 @@ class __PageSelectorState extends State<_PageSelector>
                                                       Text('Processing Data')));
                                           form.save();
                                           form.reset();
-                                          print("The object is working fine: ${userObj.typeNeg}");
+                                          print("The object is working fine: ${userObj.descTipoNegocio}");
                                         }
                                       },
                                       child: Text('Save'))))),

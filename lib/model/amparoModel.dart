@@ -15,17 +15,23 @@ class Amparo {
   int orden;
   int poliza;
 
-  int concepto;
-  int dias;
+  String concepto; //Nombre del amparo
   String fechaInicial;
   String fechaFinal;
+  int plazoAdic; //Plazo adicional del amparo en años
 
   double porcentaje;
   double valorAsegurado;
   double tasaAmparo;
+  double tasaMinima;
   double prima;
 
   String descripcion;
+
+  @override
+  String toString() {
+    return 'Amparo{concepto: $concepto}';
+  }
 
   Amparo({
     this.amparo,
@@ -33,13 +39,14 @@ class Amparo {
     this.poliza,
 
     this.concepto,
-    this.dias,
     this.fechaInicial,
     this.fechaFinal,
+    this.plazoAdic,
 
     this.porcentaje,
     this.valorAsegurado,
     this.tasaAmparo,
+    this.tasaMinima,
     this.prima,
 
     this.descripcion,
@@ -51,13 +58,14 @@ class Amparo {
     poliza: json["poliza"],
 
     concepto: json["concepto"],
-    dias: json["dias"],
     fechaInicial: json["fechaInicial"],
     fechaFinal: json["fechaFinal"],
+    plazoAdic: json["plazoAdic"],
 
     porcentaje: json["porcentaje"],
     valorAsegurado: json["valorAsegurado"],
     tasaAmparo: json["tasaAmparo"],
+    tasaMinima: json["tasaMinima"],
     prima: json["prima"],
 
     descripcion: json["descripcion"],
@@ -65,13 +73,14 @@ class Amparo {
 
   Map<String, dynamic> toMap() => {
     "concepto": concepto,
-    "dias": dias,
     "fechaInicial": fechaInicial,
     "fechaFinal": fechaFinal,
+    "plazoAdic" :plazoAdic,
 
     "porcentaje": porcentaje,
     "valorAsegurado": valorAsegurado,
     "tasaAmparo": tasaAmparo,
+    "tasaMinima": tasaMinima,
     "prima": prima,
   };
 }
