@@ -228,9 +228,8 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     var polizaObj = Provider.of<Poliza>(context);
     Poliza poliza = Poliza();
-    List<Amparo> amparos = List();
     setState(() {
-      amparos = polizaObj.amparos;
+      polizaObj.amparos = polizaObj.amparos;
     });
     return Container(
       child: Card(
@@ -240,7 +239,7 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
             children: <Widget>[
               ListView.builder(
                   shrinkWrap: true,
-                  itemCount: amparos != null ? amparos.length : 0,
+                  itemCount: polizaObj.amparos != null ? polizaObj.amparos.length : 0,
                   itemBuilder: (BuildContext context, int index) {
                     return Dismissible(
                         key: UniqueKey(),
@@ -291,7 +290,7 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                         onDismissed: (direction) {
                           setState(() {
                             if (direction == DismissDirection.endToStart) {
-                              amparos.removeAt(index);
+                              polizaObj.amparos.removeAt(index);
                             } else {
                               print("Amparo confirmado");
                             }
@@ -299,7 +298,7 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                         },
                         child: ExpansionTile(
                           initiallyExpanded: true,
-                          title: Text(amparos[index].concepto),
+                          title: Text(polizaObj.amparos[index].concepto),
                           children: <Widget>[
                             Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -307,7 +306,7 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                                 decoration: InputDecoration(
                                     labelText: "Porcentaje:",
                                     icon: Icon(Icons.assessment)),
-                                initialValue: amparos[index].porcentaje.toString(),
+                                initialValue: polizaObj.amparos[index].porcentaje.toString(),
                               ),
                             ),
                             Padding(
@@ -317,7 +316,7 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                                     labelText: "Vlr. Asegurado amparo:",
                                     icon: Icon(Icons.assessment)),
                                 initialValue: polizaObj.valorContrato != null
-                                    ? (amparos[index].porcentaje *
+                                    ? (polizaObj.amparos[index].porcentaje *
                                             polizaObj.valorContrato)
                                         .toString()
                                     : "",
