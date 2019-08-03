@@ -47,7 +47,7 @@ class _Page0State extends State<Page0> with AutomaticKeepAliveClientMixin {
                     if (value.isEmpty) {
                       return 'City is required!';
                     }
-                    return "";
+                   // return "";
                   },
                   onSaved: (value) {
                     print("Onsave Called for City");
@@ -62,7 +62,7 @@ class _Page0State extends State<Page0> with AutomaticKeepAliveClientMixin {
                     if (value.isEmpty) {
                       return 'Country is required!';
                     }
-                    return "";
+                   return null;
                   },
                   onSaved: (value) {
                     print("Onsave Called for Country");
