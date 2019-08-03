@@ -14,7 +14,7 @@ import 'package:http/http.dart' as http;
 
 List<User> users = new List<User>();
 
-class Clausulado{
+class Clausulado {
   String prodClausulado;
   String textoClausulado;
 
@@ -47,7 +47,9 @@ class _Page0State extends State<Page0> with AutomaticKeepAliveClientMixin {
                     if (value.isEmpty) {
                       return 'City is required!';
                     }
-                    return "";
+                    //TODO:Never return string by default, if any string returns from the validator the it means there is error.
+                    // TODO:it doesnt mattter even it is empty string
+                    //return "";
                   },
                   onSaved: (value) {
                     print("Onsave Called for City");
@@ -62,7 +64,9 @@ class _Page0State extends State<Page0> with AutomaticKeepAliveClientMixin {
                     if (value.isEmpty) {
                       return 'Country is required!';
                     }
-                    return "";
+                    //TODO:Never return string by default, if any string returns from the validator the it means there is error.
+                    // TODO:it doesnt mattter even it is empty string
+//                    return "";
                   },
                   onSaved: (value) {
                     print("Onsave Called for Country");
@@ -90,8 +94,6 @@ class Page1 extends StatefulWidget {
 }
 
 class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
-
-
   String tipoPolizaValue;
   String tipoNegocioValue;
   Clausulado clausuladoValue;
@@ -110,7 +112,10 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
   DateTime minDate;
 
   ///Listado Producto Clausulado
-  List<Clausulado> prodClausulado = <Clausulado>[Clausulado("Decreto123","Lorem ipsum1"),Clausulado("Decreto456","Lorem ipsum2")];
+  List<Clausulado> prodClausulado = <Clausulado>[
+    Clausulado("Decreto123", "Lorem ipsum1"),
+    Clausulado("Decreto456", "Lorem ipsum2")
+  ];
 
   List<String> tipoPoliza = [
     "Particular",
@@ -172,7 +177,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     var polizaObj = Provider.of<Poliza>(context);
 
     return Card(
@@ -195,16 +200,16 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                           icon: Icon(Icons.person)),
                       suggestionsHeight: 80.0,
                       itemBuilder: (context, user) => Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(user.name,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold)),
-                                  Text(user.email)
-                                ]),
-                          ),
+                        padding: EdgeInsets.all(8.0),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(user.name,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(user.email)
+                            ]),
+                      ),
                       onSearch: (search) async => users
                           .where((user) =>
                               user.name
@@ -221,17 +226,16 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                       onChanged: (value) {
                         setState(() {
                           selectedUser = value;
-                          if(value != null){
+                          if (value != null) {
                             cupoController.text = value.email;
                           }
                         });
                       },
                       onSaved: (value) => setState(() {
-                            selectedUser = value;
-                            polizaObj.apellidoRazonSocial = value.name;
-                            print(
-                                "Selected user email ${selectedUser.email}");
-                          }),
+                        selectedUser = value;
+                        polizaObj.apellidoRazonSocial = value.name;
+                        print("Selected user email ${selectedUser.email}");
+                      }),
                       validator: (user) =>
                           user == null ? 'El Afianzado no existe.' : null,
                     ),
@@ -240,7 +244,9 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: DateTimePickerFormField(
-              decoration: InputDecoration(icon: Icon(Icons.date_range),labelText: 'Vigencia Desde /From'),
+              decoration: InputDecoration(
+                  icon: Icon(Icons.date_range),
+                  labelText: 'Vigencia Desde /From'),
               controller: initialDate,
               format: dateFormat,
               enabled: true,
@@ -251,7 +257,9 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                 } else if (minDate.isAfter(value)) {
                   return 'Retroactividad máxima superada';
                 }
-                return "";
+                //TODO:Never return string by default, if any string returns from the validator the it means there is error.
+                // TODO:it doesnt mattter even it is empty string
+//                return "";
               },
               onChanged: (DateTime date) {
                 setState(() {
@@ -296,7 +304,9 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                 if (value == null ?? true) {
                   return 'Favor seleccione un clausulado';
                 }
-                return "";
+                //TODO:Never return string by default, if any string returns from the validator the it means there is error.
+                // TODO:it doesnt mattter even it is empty string
+//                return "";
               },
               items: prodClausulado.map((Clausulado value) {
                 return DropdownMenuItem<Clausulado>(
@@ -304,7 +314,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                   child: Text(value.prodClausulado),
                 );
               }).toList(),
-              onSaved: (val) => setState((){
+              onSaved: (val) => setState(() {
                 polizaObj.textoClausulado = val.textoClausulado;
                 polizaObj.productoClausulado = val.prodClausulado;
               }),
@@ -325,7 +335,9 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                 if (value?.isEmpty ?? true) {
                   return 'Favor ingrese el tipo de poliza';
                 }
-                return "";
+                //TODO:Never return string by default, if any string returns from the validator the it means there is error.
+                // TODO:it doesnt mattter even it is empty string
+//                return "";
               },
               items: tipoPoliza.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
@@ -345,8 +357,8 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
               onChanged: (String newValue) async {
                 amparos = List();
                 amparosMap = await getAmparos(newValue);
-                amparosMap.data.forEach((key,value){
-                  amparos.add(Amparo.fromMap(value.cast<String,dynamic>()));
+                amparosMap.data.forEach((key, value) {
+                  amparos.add(Amparo.fromMap(value.cast<String, dynamic>()));
                 });
                 setState(() {
                   tipoNegocioValue = newValue;
@@ -359,7 +371,9 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                 if (value?.isEmpty ?? true) {
                   return 'Favor ingrese el tipo de negocio';
                 }
-                return "";
+                //TODO:Never return string by default, if any string returns from the validator the it means there is error.
+                // TODO:it doesnt mattter even it is empty string
+//                return "";
               },
               items: tipoNeg.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
@@ -382,9 +396,12 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                 if (value.isEmpty) {
                   return 'Debe verificarse el cupo';
                 }
-                return "";
+                //TODO:Never return string by default, if any string returns from the validator the it means there is error.
+                // TODO:it doesnt mattter even it is empty string
+//                return "";
               },
-              onSaved: (val) => setState(() => polizaObj.cupoDisponible = int.parse(val)),
+              onSaved: (val) =>
+                  setState(() => polizaObj.cupoDisponible = int.parse(val)),
             ),
           ),
           SizedBox(
@@ -449,10 +466,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 
-  Future<DocumentSnapshot> getAmparos(String newValue) async{
-    return Firestore.instance
-        .collection("tipoNeg")
-        .document("$newValue")
-        .get();
+  Future<DocumentSnapshot> getAmparos(String newValue) async {
+    return Firestore.instance.collection("tipoNeg").document("$newValue").get();
   }
 }

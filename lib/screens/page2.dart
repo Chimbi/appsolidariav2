@@ -104,7 +104,9 @@ class _Page2State extends State<Page2> with AutomaticKeepAliveClientMixin {
                 if (value.isEmpty) {
                   return 'Favor ingresar numero de contrato';
                 }
-                return "";
+                //TODO:Never return string by default, if any string returns from the validator the it means there is error.
+                // TODO:it doesnt mattter even it is empty string
+//                return "";
               },
               onSaved: (val) => setState(() {
                 polizaObj.numeroContrato = val;
@@ -130,7 +132,9 @@ class _Page2State extends State<Page2> with AutomaticKeepAliveClientMixin {
                 if (value.isEmpty) {
                   return "Favor ingresar valor del contrato";
                 }
-                return "";
+                //TODO:Never return string by default, if any string returns from the validator the it means there is error.
+                // TODO:it doesnt mattter even it is empty string
+//                return "";
               },
               onSaved: (val) =>
                   setState(() => polizaObj.valorContrato = double.parse(val)),
@@ -149,7 +153,9 @@ class _Page2State extends State<Page2> with AutomaticKeepAliveClientMixin {
                 if (value.isEmpty) {
                   return 'Ingresar plazo de ejecución';
                 }
-                return "";
+                //TODO:Never return string by default, if any string returns from the validator the it means there is error.
+                // TODO:it doesnt mattter even it is empty string
+//                return "";
               },
               onChanged: (val) {
                 setState(() {
@@ -176,7 +182,9 @@ class _Page2State extends State<Page2> with AutomaticKeepAliveClientMixin {
                 if (value?.isEmpty ?? true) {
                   return 'Favor ingrese el tipo de negocio';
                 }
-                return "";
+                //TODO:Never return string by default, if any string returns from the validator the it means there is error.
+                // TODO:it doesnt mattter even it is empty string
+//                return "";
               },
               items: objetoSeg.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
@@ -239,7 +247,8 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
             children: <Widget>[
               ListView.builder(
                   shrinkWrap: true,
-                  itemCount: polizaObj.amparos != null ? polizaObj.amparos.length : 0,
+                  itemCount:
+                      polizaObj.amparos != null ? polizaObj.amparos.length : 0,
                   itemBuilder: (BuildContext context, int index) {
                     return Dismissible(
                         key: UniqueKey(),
@@ -306,7 +315,9 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                                 decoration: InputDecoration(
                                     labelText: "Porcentaje:",
                                     icon: Icon(Icons.assessment)),
-                                initialValue: polizaObj.amparos[index].porcentaje.toString(),
+                                initialValue: polizaObj
+                                    .amparos[index].porcentaje
+                                    .toString(),
                               ),
                             ),
                             Padding(
@@ -346,7 +357,9 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                                   } else if (minDate.isAfter(value)) {
                                     return 'Retroactividad máxima superada';
                                   }
-                                  return "";
+                                  //TODO:Never return string by default, if any string returns from the validator the it means there is error.
+                                  // TODO:it doesnt mattter even it is empty string
+//                                  return "";
                                 },
                                 onChanged: (DateTime date) {
                                   setState(() {
@@ -373,10 +386,12 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                                 //dd-MM-yyyy
                                 controller: finalDateTEC,
                                 initialValue: polizaObj.vigDesde != null
-                                    ? DateTime.parse(((int.parse(polizaObj.vigDesde
+                                    ? DateTime.parse(((int.parse(polizaObj
+                                                    .vigDesde
                                                     .substring(6, 10)) +
                                                 polizaObj.plazoEjecucion +
-                                                polizaObj.amparos[index].plazoAdic)
+                                                polizaObj
+                                                    .amparos[index].plazoAdic)
                                             .toString() +
                                         polizaObj.vigDesde.substring(3, 5) +
                                         polizaObj.vigDesde.substring(0, 2)))
@@ -390,12 +405,15 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                                   } else if (minDate.isAfter(value)) {
                                     return 'Retroactividad máxima superada';
                                   }
-                                  return "";
+                                  //TODO:Never return string by default, if any string returns from the validator the it means there is error.
+                                  // TODO:it doesnt mattter even it is empty string
+//                                  return "";
                                 },
                                 onChanged: (DateTime date) {
                                   setState(() {
                                     initialDateTEC.text = date.toString();
-                                    polizaObj.amparos[index].fechaInicial = initialDateTEC.text;
+                                    polizaObj.amparos[index].fechaInicial =
+                                        initialDateTEC.text;
                                   });
                                 },
                                 onSaved: (DateTime date) {
