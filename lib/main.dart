@@ -1,3 +1,4 @@
+import 'package:appsolidariav2/screens/auxPage.dart';
 import 'package:appsolidariav2/screens/inicio.dart';
 import 'package:appsolidariav2/screens/pdf/pdfmain.dart';
 import 'package:appsolidariav2/screens/poliza.dart';
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
           '/': (context) => PaginaInicio(),
           // When navigating to the "/second" route, build the SecondScreen widget.
           '/poliza': (context) => PolizaForm(),
-          '/terceros': (context) => AutoCompleteDemo(),
+          '/terceros': (context) => AuxiliarPage(),
           '/test': (context) => PageSelectorDemo(),
           '/pdfdemo': (context) => PdfDemo(),
 

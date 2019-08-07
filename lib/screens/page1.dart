@@ -14,7 +14,7 @@ import 'package:http/http.dart' as http;
 
 List<User> users = new List<User>();
 
-class Clausulado{
+class Clausulado {
   String prodClausulado;
   String textoClausulado;
 
@@ -47,7 +47,7 @@ class _Page0State extends State<Page0> with AutomaticKeepAliveClientMixin {
                     if (value.isEmpty) {
                       return 'City is required!';
                     }
-                   // return "";
+                    return null;
                   },
                   onSaved: (value) {
                     print("Onsave Called for City");
@@ -62,7 +62,7 @@ class _Page0State extends State<Page0> with AutomaticKeepAliveClientMixin {
                     if (value.isEmpty) {
                       return 'Country is required!';
                     }
-                   return null;
+                    return null;
                   },
                   onSaved: (value) {
                     print("Onsave Called for Country");
@@ -90,8 +90,6 @@ class Page1 extends StatefulWidget {
 }
 
 class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
-
-
   String tipoPolizaValue;
   String tipoNegocioValue;
   Clausulado clausuladoValue;
@@ -110,7 +108,10 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
   DateTime minDate;
 
   ///Listado Producto Clausulado
-  List<Clausulado> prodClausulado = <Clausulado>[Clausulado("Decreto123","Lorem ipsum1"),Clausulado("Decreto456","Lorem ipsum2")];
+  List<Clausulado> prodClausulado = <Clausulado>[
+    Clausulado("Decreto123", "Lorem ipsum1"),
+    Clausulado("Decreto456", "Lorem ipsum2")
+  ];
 
   List<String> tipoPoliza = [
     "Particular",
@@ -172,7 +173,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     var polizaObj = Provider.of<Poliza>(context);
 
     return Card(
@@ -195,16 +196,16 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                           icon: Icon(Icons.person)),
                       suggestionsHeight: 80.0,
                       itemBuilder: (context, user) => Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(user.name,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold)),
-                                  Text(user.email)
-                                ]),
-                          ),
+                        padding: EdgeInsets.all(8.0),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(user.name,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(user.email)
+                            ]),
+                      ),
                       onSearch: (search) async => users
                           .where((user) =>
                               user.name
@@ -221,22 +222,22 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                       onChanged: (value) {
                         setState(() {
                           selectedUser = value;
-                          if(value != null){
+                          if (value != null) {
                             cupoController.text = value.email;
                           }
                         });
                       },
                       onSaved: (value) => setState(() {
-                            selectedUser = value;
-                            polizaObj.apellidoRazonSocial = value.name;
-                            print(
-                                "Selected user email ${selectedUser.email}");
-                          }),
+                        selectedUser = value;
+                        polizaObj.apellidoRazonSocial = value.name;
+                        print("Selected user email ${selectedUser.email}");
+                      }),
                       validator: (user) =>
                           user == null ? 'El Afianzado no existe.' : null,
                     ),
             ),
           ),
+          /*
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: DateTimePickerFormField(
@@ -251,16 +252,14 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                 } else if (minDate.isAfter(value)) {
                   return 'Retroactividad máxima superada';
                 }
-                return "";
+                return null;
               },
               onChanged: (DateTime date) {
                 setState(() {
                   _fromDate1 = date;
                   //initialDate.text = date.toString();
                   //finalDate is the controller for the next date
-                  finalDate.text = initialDate.text != ""
-                      ? initialDate.text.substring(0, 2) +
-                          "-" +
+                  finalDate.text = initialDate.text != "" ? initialDate.text.substring(0, 2) + "-" +
                           initialDate.text.substring(3, 5) +
                           "-" +
                           (int.parse(initialDate.text.substring(6, 10)) +
@@ -269,16 +268,85 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                       : "";
                   print("initialDate: ${initialDate.text}");
                   polizaObj.vigDesde = initialDate.text;
-                  polizaObj.notifyListeners();
+                  //polizaObj.notifyListeners();
                 });
               },
+              /*
+              Modificado 6 Agosto
               onFieldSubmitted: (DateTime date) {
                 setState(() {
                   _fromDate1 = date;
                   polizaObj.vigDesde = date.toString();
                 });
               },
+              */
             ),
+          ),
+          */
+          DateTimeField(
+            format: dateFormat,
+            controller: initialDate,
+            //Lo agregue ver si es necesario
+            onShowPicker: (context, currentValue) async {
+              final date = await showDatePicker(
+                  context: context,
+                  firstDate: DateTime(1900),
+                  initialDate: currentValue ?? DateTime.now(),
+                  lastDate: DateTime(2100));
+              /*
+              Used to return time as well
+              if (date != null) {
+                final time = await showTimePicker(
+                  context: context,
+                  initialTime:
+                      TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                );
+                return DateTimeField.combine(date, time);
+              } else {
+                return currentValue;
+              }
+              */
+              return date;
+            },
+            autovalidate: false,
+            validator: (value) {
+              if (value == null) {
+                return 'Debe ingresar una fecha inicial valida';
+              } else if (minDate.isAfter(value)) {
+                return 'Retroactividad máxima superada';
+              }
+              return null;
+            },
+            initialValue: (polizaObj.vigDesde != null && polizaObj.vigDesde != "")
+                ? DateTime.parse((polizaObj.vigDesde.substring(6, 10) +
+                    polizaObj.vigDesde.substring(3, 5) +
+                    polizaObj.vigDesde.substring(0, 2)))
+                : null, //TODO Se cambia de "" a null 06 Agosto 2019
+            onChanged: (DateTime date) {
+              setState(() {
+                //_fromDate1 = date;
+                //initialDate.text = date.toString();
+                //finalDate is the controller for the next date
+                finalDate.text = initialDate.text != "" ? initialDate.text.substring(0, 2) + "-" +
+                    initialDate.text.substring(3, 5) +
+                    "-" +
+                    (int.parse(initialDate.text.substring(6, 10)) +
+                        int.parse(periodoController.text))
+                        .toString()
+                    : "";
+                print("initialDate: ${initialDate.text}");
+                polizaObj.vigDesde = initialDate.text;
+                //polizaObj.notifyListeners();
+              });
+            },
+            onSaved: (DateTime date) {
+              setState(() {
+                polizaObj.vigDesde = date.toString(); //TODO Revisar
+              });
+            },
+            resetIcon: Icon(Icons.delete),
+            readOnly: false,
+            decoration: InputDecoration(icon: Icon(Icons.date_range),labelText: 'Vigencia Desde /From'),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -296,7 +364,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                 if (value == null ?? true) {
                   return 'Favor seleccione un clausulado';
                 }
-                return "";
+                return null;
               },
               items: prodClausulado.map((Clausulado value) {
                 return DropdownMenuItem<Clausulado>(
@@ -304,7 +372,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                   child: Text(value.prodClausulado),
                 );
               }).toList(),
-              onSaved: (val) => setState((){
+              onSaved: (val) => setState(() {
                 polizaObj.textoClausulado = val.textoClausulado;
                 polizaObj.productoClausulado = val.prodClausulado;
               }),
@@ -325,7 +393,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                 if (value?.isEmpty ?? true) {
                   return 'Favor ingrese el tipo de poliza';
                 }
-                return "";
+                return null;
               },
               items: tipoPoliza.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
@@ -345,8 +413,8 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
               onChanged: (String newValue) async {
                 amparos = List();
                 amparosMap = await getAmparos(newValue);
-                amparosMap.data.forEach((key,value){
-                  amparos.add(Amparo.fromMap(value.cast<String,dynamic>()));
+                amparosMap.data.forEach((key, value) {
+                  amparos.add(Amparo.fromMap(value.cast<String, dynamic>()));
                 });
                 setState(() {
                   tipoNegocioValue = newValue;
@@ -359,7 +427,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                 if (value?.isEmpty ?? true) {
                   return 'Favor ingrese el tipo de negocio';
                 }
-                return "";
+                return null;
               },
               items: tipoNeg.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
@@ -382,9 +450,10 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                 if (value.isEmpty) {
                   return 'Debe verificarse el cupo';
                 }
-                return "";
+                return null;
               },
-              onSaved: (val) => setState(() => polizaObj.cupoDisponible = int.parse(val)),
+              onSaved: (val) =>
+                  setState(() => polizaObj.cupoDisponible = int.parse(val)),
             ),
           ),
           SizedBox(
@@ -449,10 +518,7 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 
-  Future<DocumentSnapshot> getAmparos(String newValue) async{
-    return Firestore.instance
-        .collection("tipoNeg")
-        .document("$newValue")
-        .get();
+  Future<DocumentSnapshot> getAmparos(String newValue) async {
+    return Firestore.instance.collection("tipoNeg").document("$newValue").get();
   }
 }

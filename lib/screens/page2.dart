@@ -104,9 +104,7 @@ class _Page2State extends State<Page2> with AutomaticKeepAliveClientMixin {
                 if (value.isEmpty) {
                   return 'Favor ingresar numero de contrato';
                 }
-                //TODO:Never return string by default, if any string returns from the validator the it means there is error.
-                // TODO:it doesnt mattter even it is empty string
-//                return "";
+                return null;
               },
               onSaved: (val) => setState(() {
                 polizaObj.numeroContrato = val;
@@ -132,9 +130,7 @@ class _Page2State extends State<Page2> with AutomaticKeepAliveClientMixin {
                 if (value.isEmpty) {
                   return "Favor ingresar valor del contrato";
                 }
-                //TODO:Never return string by default, if any string returns from the validator the it means there is error.
-                // TODO:it doesnt mattter even it is empty string
-//                return "";
+                return null;
               },
               onSaved: (val) =>
                   setState(() => polizaObj.valorContrato = double.parse(val)),
@@ -153,9 +149,7 @@ class _Page2State extends State<Page2> with AutomaticKeepAliveClientMixin {
                 if (value.isEmpty) {
                   return 'Ingresar plazo de ejecución';
                 }
-                //TODO:Never return string by default, if any string returns from the validator the it means there is error.
-                // TODO:it doesnt mattter even it is empty string
-//                return "";
+                return null;
               },
               onChanged: (val) {
                 setState(() {
@@ -182,9 +176,7 @@ class _Page2State extends State<Page2> with AutomaticKeepAliveClientMixin {
                 if (value?.isEmpty ?? true) {
                   return 'Favor ingrese el tipo de negocio';
                 }
-                //TODO:Never return string by default, if any string returns from the validator the it means there is error.
-                // TODO:it doesnt mattter even it is empty string
-//                return "";
+                return null;
               },
               items: objetoSeg.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
@@ -257,8 +249,8 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                           padding: EdgeInsets.all(12.0),
                           color: Colors.green,
                           alignment: Alignment.centerLeft,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Icon(
                                 Icons.check_circle_outline,
@@ -279,8 +271,8 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                           padding: EdgeInsets.all(12.0),
                           color: Colors.red,
                           alignment: Alignment.centerRight,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
                               Icon(
                                 Icons.delete,
@@ -306,7 +298,7 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                           });
                         },
                         child: ExpansionTile(
-                          initiallyExpanded: true,
+                          initiallyExpanded: false,
                           title: Text(polizaObj.amparos[index].concepto),
                           children: <Widget>[
                             Padding(
@@ -333,6 +325,8 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                                     : "",
                               ),
                             ),
+                            /*
+                            DateTimeField Original
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: DateTimePickerFormField(
@@ -357,9 +351,7 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                                   } else if (minDate.isAfter(value)) {
                                     return 'Retroactividad máxima superada';
                                   }
-                                  //TODO:Never return string by default, if any string returns from the validator the it means there is error.
-                                  // TODO:it doesnt mattter even it is empty string
-//                                  return "";
+                                  return null;
                                 },
                                 onChanged: (DateTime date) {
                                   setState(() {
@@ -376,6 +368,62 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                                 },
                               ),
                             ),
+                            */
+                            DateTimeField(
+                              format: dateFormat,
+                              controller: initialDateTEC,
+                              //Lo agregue ver si es necesario
+                              onShowPicker: (context, currentValue) async {
+                                final date = await showDatePicker(
+                                    context: context,
+                                    firstDate: DateTime(1900),
+                                    initialDate: currentValue ?? DateTime.now(),
+                                    lastDate: DateTime(2100));
+                                /*
+                                if (date != null) {
+                                  final time = await showTimePicker(
+                                    context: context,
+                                    initialTime: TimeOfDay.fromDateTime(
+                                        currentValue ?? DateTime.now()),
+                                  );
+                                  return DateTimeField.combine(date, time);
+                                } else {
+                                  return currentValue;
+                                }
+                                */
+                                return date;
+                              },
+                              autovalidate: false,
+                              validator: (value) {
+                                if (value == null) {
+                                  return 'Debe ingresar una fecha inicial valida';
+                                } else if (minDate.isAfter(value)) {
+                                  return 'Retroactividad máxima superada';
+                                }
+                                return null;
+                              },
+                              initialValue: polizaObj.vigDesde != null
+                                  ? DateTime.parse(
+                                      (polizaObj.vigDesde.substring(6, 10) +
+                                          polizaObj.vigDesde.substring(3, 5) +
+                                          polizaObj.vigDesde.substring(0, 2)))
+                                  : "",
+                              onChanged: (date) => setState(() {
+                                initialDateTEC.text = date.toString();
+                              }),
+                              onSaved: (DateTime date) {
+                                setState(() {
+                                  polizaObj.amparos[index].fechaInicial =
+                                      date.toString();
+                                });
+                              },
+                              resetIcon: Icon(Icons.delete),
+                              readOnly: false,
+                              decoration: InputDecoration(
+                                  icon: Icon(Icons.date_range),
+                                  labelText: 'Vigencia Desde amparo'),
+                            ),
+                            /*
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: DateTimePickerFormField(
@@ -405,9 +453,7 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                                   } else if (minDate.isAfter(value)) {
                                     return 'Retroactividad máxima superada';
                                   }
-                                  //TODO:Never return string by default, if any string returns from the validator the it means there is error.
-                                  // TODO:it doesnt mattter even it is empty string
-//                                  return "";
+                                  return null;
                                 },
                                 onChanged: (DateTime date) {
                                   setState(() {
@@ -424,6 +470,67 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                                 },
                               ),
                             ),
+                            */
+                            DateTimeField(
+                              format: dateFormat,
+                              controller: finalDateTEC,
+                              onShowPicker: (context, currentValue) async {
+                                final date = await showDatePicker(
+                                    context: context,
+                                    firstDate: DateTime(1900),
+                                    initialDate: currentValue ?? DateTime.now(),
+                                    lastDate: DateTime(2100));
+                                /*
+                                if (date != null) {
+                                  final time = await showTimePicker(
+                                    context: context,
+                                    initialTime: TimeOfDay.fromDateTime(
+                                        currentValue ?? DateTime.now()),
+                                  );
+                                  return DateTimeField.combine(date, time);
+                                } else {
+                                  return currentValue;
+                                }
+                                */
+                                return date;
+                              },
+                              autovalidate: false,
+                              validator: (value) {
+                                if (value == null) {
+                                  return 'Debe ingresar una fecha inicial valida';
+                                } else if (minDate.isAfter(value)) {
+                                  return 'Retroactividad máxima superada';
+                                }
+                                return null;
+                              },
+                              initialValue: polizaObj.vigDesde != null
+                                  ? DateTime.parse(((int.parse(polizaObj
+                                                  .vigDesde
+                                                  .substring(6, 10)) +
+                                              polizaObj.plazoEjecucion +
+                                              polizaObj
+                                                  .amparos[index].plazoAdic)
+                                          .toString() +
+                                      polizaObj.vigDesde.substring(3, 5) +
+                                      polizaObj.vigDesde.substring(0, 2)))
+                                  : null,
+                              onChanged: (date) => setState(() {
+                                initialDateTEC.text = date.toString();
+                                polizaObj.amparos[index].fechaInicial =
+                                    initialDateTEC.text;
+                              }),
+                              onSaved: (DateTime date) {
+                                setState(() {
+                                  polizaObj.amparos[index].fechaInicial =
+                                      date.toString();
+                                });
+                              },
+                              resetIcon: Icon(Icons.delete),
+                              readOnly: false,
+                              decoration: InputDecoration(
+                                  icon: Icon(Icons.date_range),
+                                  labelText: 'Vigencia Hasta amparo'),
+                            ),
                             SizedBox(
                               height: 10,
                             ),
@@ -432,69 +539,6 @@ class _Page3State extends State<Page3> with AutomaticKeepAliveClientMixin {
                   }),
             ],
           )
-
-          /*
-          amparos.map((amparo){
-              return ExpansionTile(
-                  title: Text(amparo.concepto),
-                initiallyExpanded: true,
-                children: <Widget>[
-                  TextFormField(
-                    decoration: InputDecoration(icon: Icon(Icons.assessment)),
-                    initialValue: amparo.porcentaje.toString(),
-                  )
-                ],
-
-
-              );
-            }).toList()
-        )
-        */
-          /*
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: amparos != null ? amparos.length: 0,
-            itemBuilder: (BuildContext context, int index){
-              return Text(amparos[index].concepto);
-            }
-        )
-        */
-          /*
-        ExpansionTile(
-          initiallyExpanded: true,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: TextFormField(
-                decoration: InputDecoration(labelText: 'City'),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'City is required!';
-                  }
-                },
-                onSaved: (value) {
-                  print("Onsave Called for City");
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: TextFormField(
-                decoration: InputDecoration(labelText: 'Country'),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Country is required!';
-                  }
-                },
-                onSaved: (value) {
-                  print("Onsave Called for Country");
-                },
-              ),
-            )
-          ],
-          title: Text("City/country"),
-        ),
-        */
           ),
     );
   }

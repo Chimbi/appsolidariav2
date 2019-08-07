@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:appsolidariav2/model/amparoModel.dart';
 import 'package:appsolidariav2/model/polizaModel.dart';
 import 'package:appsolidariav2/screens/page1.dart';
 import 'package:appsolidariav2/screens/page2.dart';
 import 'package:appsolidariav2/utils/ui_utils.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:appsolidariav2/model/user.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
@@ -40,21 +42,30 @@ class _PolizaFormState extends State<PolizaForm> {
       content: Page2(),
       isActive: true,
     ),
+
     Step(
       title: Text('Amparos'),
       content: Page3(),
       isActive: true,
     ),
     Step(
-      title: Text('Guardar'),
+      title: Text('Revision'),
       content: Page3(),
       state: StepState.complete,
       isActive: true,
     ),
   ];
+  //Lista de todos los Amparos
+  List<Amparo> allAmparos = List();
+  //Lista de amparos en el objeto polizaObj.amparos
+  List<String> amparosObjList = List();
+  //Lista de amparos que no estan en el objeto polizaObj.amparos
+  List<Amparo> otherAmparos = List();
+  DocumentSnapshot allAmparosMap;
 
   @override
   Widget build(BuildContext context) {
+    var polizaObj = Provider.of<Poliza>(context);
     return Scaffold(
       // Appbar
       appBar: AppBar(
@@ -76,7 +87,8 @@ class _PolizaFormState extends State<PolizaForm> {
                     children: <Widget>[
                       RaisedButton(
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadiusDirectional.circular(10.0)),
+                            borderRadius:
+                            BorderRadiusDirectional.circular(10.0)),
                         color: azulSolidaria2,
                         onPressed: onStepContinue,
                         child: const Text(
@@ -86,7 +98,8 @@ class _PolizaFormState extends State<PolizaForm> {
                       ),
                       OutlineButton(
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadiusDirectional.circular(10.0)),
+                            borderRadius:
+                            BorderRadiusDirectional.circular(10.0)),
                         onPressed: onStepCancel,
                         child: const Text('CANCELAR'),
                       ),
@@ -94,43 +107,31 @@ class _PolizaFormState extends State<PolizaForm> {
                   ),
                   current_step == 3
                       ? RaisedButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius:
-                        BorderRadiusDirectional.circular(10.0)),
-                    color: amarilloSolidaria1,
-                    onPressed: () =>                   showDialog<void>(
-                      context: context,
-                      barrierDismissible: false, // user must tap button!
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Formulario incompleto'),
-                          content: SingleChildScrollView(
-                            child: ListBody(
-                              children: <Widget>[
-                                Text(
-                                    'Con el fin de calcular los amparos correctamente'),
-                                Text('debe diligenciarse el formulario en su'),
-                                Text('totalidad. Muchas gracias.')
-                              ],
-                            ),
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadiusDirectional.circular(10.0)),
+                          color: amarilloSolidaria1,
+                          onPressed: () async {
+                            otherAmparos = List();
+                            allAmparosMap = await getAllAmparos();
+                            if(polizaObj.amparos!=null){}
+                            amparosObjList = polizaObj.amparos.map((amp){
+                              return amp.concepto;
+                            }).toList();
+                            allAmparosMap.data.forEach((key,value){
+                              if(!amparosObjList.contains(key)){
+                               otherAmparos.add(Amparo.fromMap(value.cast<String,dynamic>()));
+                              }
+                            });
+                            polizaObj.amparos.addAll(otherAmparos);
+                            polizaObj.notifyListeners();
+                            print("OtherAmparos: ${otherAmparos.toString()}");
+                          },
+                          child: const Text(
+                            'OTROS AMPAROS',
+                            style: TextStyle(color: azulSolidaria1),
                           ),
-                          actions: <Widget>[
-                            FlatButton(
-                              child: Text('Aceptar'),
-                              onPressed: () {
-                                current_step = 0;
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                    child: const Text(
-                      'NUEVO AMPARO',
-                      style: TextStyle(color: azulSolidaria1),
-                    ),
-                  )
+                        )
                       : Container(),
                 ],
               ),
@@ -145,17 +146,18 @@ class _PolizaFormState extends State<PolizaForm> {
             });
           },
           onStepContinue: () {
+            final form = formKey.currentState;
             setState(() {
-              final form = formKey.currentState;
               if (current_step < steps.length - 1) {
                 current_step = current_step + 1;
               } else {
-                current_step = 0;
                 if (form.validate()) {
                   //Scaffold.of(context).showSnackBar(SnackBar(content: Text('Processing Data')));
                   form.save();
-                  //Navigator.pop(context);
+                  Navigator.pop(context);
                 } else {
+                  print("form.validate: ${form.validate()}");
+                  print("form state: $form");
                   showDialog<void>(
                     context: context,
                     barrierDismissible: false, // user must tap button!
@@ -166,9 +168,8 @@ class _PolizaFormState extends State<PolizaForm> {
                           child: ListBody(
                             children: <Widget>[
                               Text(
-                                  'Con el fin de calcular los amparos correctamente'),
-                              Text('debe diligenciarse el formulario en su'),
-                              Text('totalidad. Muchas gracias.')
+                                  'Para emitir la poliza correctamente'),
+                              Text('agradecemos diligenciar el formulario en su totalidad'),
                             ],
                           ),
                         ),
@@ -185,6 +186,7 @@ class _PolizaFormState extends State<PolizaForm> {
                     },
                   );
                 }
+                current_step = 0;
               }
             });
           },
@@ -201,4 +203,12 @@ class _PolizaFormState extends State<PolizaForm> {
       ),
     );
   }
+
+  Future<DocumentSnapshot> getAllAmparos() async{
+    return Firestore.instance
+        .collection("tipoNeg")
+        .document("All")
+        .get();
+  }
+
 }
