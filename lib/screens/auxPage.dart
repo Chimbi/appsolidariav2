@@ -15,6 +15,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -28,6 +29,8 @@ import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_autocomplete_formfield/simple_autocomplete_formfield.dart';
+import 'package:flutter_masked_text/flutter_masked_text.dart';
+
 
 class AuxiliarPage extends StatefulWidget {
   Auxiliar actual;
@@ -42,6 +45,11 @@ class AuxiliarPage extends StatefulWidget {
 }
 
 class _AuxiliarPageState extends State<AuxiliarPage> {
+
+  final formKey = GlobalKey<FormState>();
+
+  Agencia agenciaValue;
+
   List<Genero> generos = [
     Genero.withId(1, "Femenino"),
     Genero.withId(2, "Masculino")
@@ -71,6 +79,12 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
 
   List<String> tipoTercero = ["Intermediario", "Afianzado", "Contratante"];
 
+  List<Agencia> agencias = [
+    Agencia.withId(1, "Agencia Bogota"),
+    Agencia.withId(1, "Agencia Medellin"),
+    Agencia.withId(2, "Agencia Cali"),
+  ];
+
   List<Ubicacion> ubicaciones = List();
 
   var _genero = null;
@@ -84,32 +98,22 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
   //---AutoComplete variables
 
   var intermedList = <String>[];
-  String _intermediario = '';
 
-  GlobalKey<AutoCompleteTextFieldState<String>> autoCompKey = new GlobalKey();
+  //GlobalKey<AutoCompleteTextFieldState<String>> autoCompKey = new GlobalKey();
 
-  AutoCompleteTextField searchTextField;
+  //AutoCompleteTextField searchTextField;
 
   //Se crea la instancia
   final FirebaseDatabase database = FirebaseDatabase.instance;
   DatabaseReference ubicacionRef;
+  DatabaseReference terceroRef;
   DatabaseReference rootRef;
 
-  int _auxiliar;
-  var _id = TextEditingController();
-  var _nombres = TextEditingController();
-  var _apellidos = TextEditingController();
-  final _favorito = TextEditingController();
-  File _foto = null; // FOTO: Variable
-
-  var _direccion = TextEditingController();
-  var _movil = TextEditingController();
-  var _fijo = TextEditingController();
-  var _correo = TextEditingController();
-  var _documento = TextEditingController();
   var birthDateTEC = TextEditingController();
   var _ubicacion = TextEditingController();
+  var cupoOperativoTEC = TextEditingController();
 
+  //TODO update the focus nodes
   final FocusNode _idFocus = FocusNode();
   final FocusNode _nombresFocus = FocusNode();
   final FocusNode _apellidosFocus = FocusNode();
@@ -120,13 +124,10 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
   final FocusNode _correoFocus = FocusNode();
   final FocusNode _documentoFocus = FocusNode();
 
-  bool editable = false;
   DateTime nacimiento;
 
   DateFormat dateFormat;
   DateTime initialBirth = DateTime(2000);
-
-  //bool loading = true;
 
   Ubicacion selectedPlace;
 
@@ -136,6 +137,8 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
     dateFormat = new DateFormat('dd-MM-yyyy'); //new DateFormat.yMMMMd('es');
 
     ubicacionRef = database.reference().child("ubicacion");
+
+    terceroRef = database.reference().child("terceros");
 
     //Root ref
     rootRef = database.reference();
@@ -226,39 +229,6 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
               }).toList(),
             ),
           ),
-
-          /*
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: DateTimePickerFormField(
-              decoration: InputDecoration(
-                  icon: Icon(Icons.date_range),
-                  labelText: 'Fecha de nacimiento'),
-              initialDate: initialBirth,
-              controller: birthDateTEC,
-              format: dateFormat,
-              enabled: true,
-              dateOnly: true,
-              validator: (value) {
-                if (value == null) {
-                  return 'Debe ingresar una fecha inicial valida';
-                }
-                /*
-                else if (minDate.isAfter(value)) {
-                  return 'Retroactividad máxima superada';
-                }
-                */
-                return null;
-              },
-              onChanged: (DateTime date) {
-                setState(() {
-                  auxObj.nacimiento = date.toString();
-                });
-              },
-            ),
-          ),
-          */
-
           DateTimeField(
             format: dateFormat,
             controller: birthDateTEC,
@@ -350,6 +320,7 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
             onChanged: (String newValue) {
               setState(() {
                 _tercero = newValue;
+                auxObj.tipoTercero = newValue;
                 print("Nuevo tipo tercero seleccionado ${newValue}");
               });
             },
@@ -373,7 +344,17 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
             onChanged: (Tipo newValue) {
               setState(() {
                 _tipo = newValue;
+                auxObj.descTipo = newValue.descripcion;
+                auxObj.tipo = newValue.registro;
                 print("Nuevo genero seleccionado ${newValue.descripcion}");
+              });
+            },
+            onSaved: (Tipo newValue) {
+              setState(() {
+                _tipo = newValue;
+                auxObj.descTipo = newValue.descripcion;
+                auxObj.tipo = newValue.registro;
+                print("Nuevo genero guardado ${newValue.descripcion}");
               });
             },
             items: tipos.map((Tipo tipo) {
@@ -419,6 +400,13 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
                 print("Nuevo genero seleccionado ${newValue.descripcion}");
               });
             },
+            onSaved: (Clasificacion newValue) {
+              setState(() {
+                _clasificacion = newValue;
+                auxObj.descClasificacion = newValue.descripcion;
+                auxObj.clasificacion = newValue.registro;
+              });
+            },
             items: clasificaciones.map((Clasificacion clasificacion) {
               return new DropdownMenuItem<Clasificacion>(
                 value: clasificacion,
@@ -459,8 +447,6 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
         SizedBox(
           height: 30,
         ),
-
-        //datosAdicional,
       ], // children principal
     );
 
@@ -521,8 +507,6 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
             setState(() {
               selectedPlace = value;
               if (value != null) {
-                auxObj.municipio = value.municipio;
-                auxObj.departamento = value.departamento;
                 _ubicacion.text = value.municipio;
                 print(
                     "Selected ubicacion departamento: ${auxObj.departamento},municipio: ${auxObj.municipio}");
@@ -531,6 +515,10 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
           },
           onSaved: (value) => setState(() {
             selectedPlace = value;
+            auxObj.municipio = value.municipio;
+            auxObj.departamento = value.departamento;
+            auxObj.c_digo_dane_del_municipio = int.parse(value.c_digo_dane_del_municipio);
+            auxObj.c_digo_dane_del_departamento = int.parse(value.c_digo_dane_del_departamento);
           }),
           autofocus: false,
           validator: (user) => user == null ? 'Campo obligatorio.' : null,
@@ -589,22 +577,194 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
               }
               return null;
             },
-            onSaved: (val) => setState(() {
-              auxObj.movil = int.parse(val);
-            }),
+            onSaved: (val){
+              auxObj.correo = val;
+            },
             keyboardType: TextInputType.emailAddress,
-            inputFormatters: [
-              WhitelistingTextInputFormatter.digitsOnly,
-            ],
           ),
         ),
         SizedBox(height: 12.0),
       ],
     );
 
+    Widget datosIntermediario = ExpansionTile(
+      initiallyExpanded: true,
+      title: Text(
+        "Datos Intermediario",
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: DropdownButtonFormField<Agencia>(
+            decoration: InputDecoration(
+                labelText: "Agencia", icon: Icon(Icons.text_fields)),
+            value: agenciaValue,
+            onChanged: (Agencia newValue) {
+              setState(() {
+                agenciaValue = newValue;
+                print("Agencia value ${agenciaValue.descripcion}");
+              });
+            },
+            validator: (Agencia value) {
+              if (value == null ?? true) {
+                return 'Favor seleccione un clausulado';
+              }
+              return null;
+            },
+            items: agencias.map((Agencia value) {
+              return DropdownMenuItem<Agencia>(
+                value: value,
+                child: Text(value.descripcion),
+              );
+            }).toList(),
+            onSaved: (val) => setState(() {
+              auxObj.descAgencia = val.descripcion;
+              auxObj.agencia = val.registro;
+            }),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextFormField(
+            decoration:
+            InputDecoration(labelText: 'Punto de venta', icon: Icon(Icons.home)),
+            enabled: true,
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Campo obligatorio';
+              }
+              return null;
+            },
+            onSaved: (val) => setState(() {
+              auxObj.descPuntoVenta = val;
+            }),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextFormField(
+            decoration:
+            InputDecoration(labelText: 'Clave', icon: Icon(Icons.home)),
+            enabled: true,
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Campo obligatorio';
+              }
+              return null;
+            },
+            onSaved: (val) => setState(() {
+              auxObj.clave = int.parse(val);
+            }),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextFormField(
+            decoration:
+            InputDecoration(labelText: 'Comision Cumplimiento %', icon: Icon(Icons.home)),
+            enabled: true,
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Campo obligatorio';
+              }
+              return null;
+            },
+            onSaved: (val) => setState(() {
+              auxObj.comCumplimiento = double.parse(val)/100;
+            }),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextFormField(
+            decoration:
+            InputDecoration(labelText: 'Delegacion Cumplimiento', icon: Icon(Icons.home)),
+            enabled: true,
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Campo obligatorio';
+              }
+              return null;
+            },
+            onSaved: (val) => setState(() {
+              auxObj.delegacionCumpl = int.parse(val);
+            }),
+          ),
+        ),
+        SizedBox(height: 12.0),
+      ],
+    );
+
+    Widget datosAfianzado = ExpansionTile(
+      initiallyExpanded: true,
+      title: Text(
+        "Datos Afianzado",
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextFormField(
+            controller: cupoOperativoTEC,
+            keyboardType: TextInputType.number,
+            decoration:
+            InputDecoration(labelText: 'Cupo Operativo', icon: Icon(Icons.home)),
+            enabled: true,
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Campo obligatorio';
+              }
+              return null;
+            },
+            onSaved: (val) => setState(() {
+              auxObj.cupoOperativo = int.parse(val);
+            }),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextFormField(
+            decoration:
+            InputDecoration(labelText: 'Cumulo Actual', icon: Icon(Icons.home)),
+            enabled: true,
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Campo obligatorio';
+              }
+              return null;
+            },
+            onSaved: (val) => setState(() {
+              auxObj.cumuloActual = int.parse(val);
+            }),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextFormField(
+            decoration:
+            InputDecoration(labelText: 'Cupo Disponible', icon: Icon(Icons.home)),
+            enabled: true,
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Campo obligatorio';
+              }
+              return null;
+            },
+            onSaved: (val) => setState(() {
+              auxObj.cupoDisponible = int.parse(val);
+            }),
+          ),
+        ),
+
+        SizedBox(height: 12.0),
+      ],
+    );
+
     return new Scaffold(
-      appBar: new AppBar(title: Text("Creación de terceros")),
-      body: new Container(
+      appBar: new AppBar(title: Text(_tercero != null ? "Creación $_tercero" : "Creacion de terceros")),
+      body: Form(
+        key: formKey,
         // Antes SafeArea
         child: ListView(
           padding: EdgeInsets.symmetric(horizontal: 12.0),
@@ -615,7 +775,12 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
             SizedBox(height: 18.0),
             datosContacto,
 
-            SizedBox(height: 74.0),
+            SizedBox(height: 12.0),
+            _tercero == "Intermediario" ? datosIntermediario : Container(),
+
+            SizedBox(height: 12.0),
+            _tercero == "Afianzado" ? datosAfianzado : Container(),
+
 
 //            new Container(
 //                padding: const EdgeInsets.only(left: 0.0, top: 0.0),
@@ -633,7 +798,42 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
           color: Colors.white,
         ),
         onPressed: () {
-          print("OnPressed FloatingActionButton");
+          final form = formKey.currentState;
+          if(form.validate()){
+            form.save();
+            //Firestore.instance.collection("terceros").add({"Chao":"Andy"});
+            //Firestore.instance.document("terceros/${auxObj.identificacion}").setData(auxObj.toMap());
+            terceroRef.child("${auxObj.tipoTercero}").child("${auxObj.identificacion}").set(auxObj.toMap());
+            print("OnPressed FloatingActionButton");
+          } else {
+            showDialog<void>(
+              context: context,
+              barrierDismissible: false, // user must tap button!
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Formulario incompleto'),
+                  content: SingleChildScrollView(
+                    child: ListBody(
+                      children: <Widget>[
+                        Text(
+                            'Para crear el tercero correctamente'),
+                        Text('agradecemos diligenciar el formulario en su totalidad'),
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('Aceptar'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+
         },
       ),
     );
@@ -647,3 +847,4 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
     });
   }
 }
+

@@ -13,7 +13,7 @@ String auxiliarToJson(Auxiliar data) {
 }
 
 class Auxiliar with ChangeNotifier{
-  int auxiliar;
+  String tipoTercero;
   int clasificacion;
   String descClasificacion;
   int tipo;
@@ -61,7 +61,7 @@ class Auxiliar with ChangeNotifier{
   int cupoDisponible;
 
   Auxiliar(
-      {this.auxiliar,
+      {this.tipoTercero,
         this.clasificacion,
         this.descClasificacion,
         this.tipo,
@@ -100,7 +100,7 @@ class Auxiliar with ChangeNotifier{
 
 
   factory Auxiliar.fromMap(Map<String, dynamic> json) => new Auxiliar(
-      auxiliar: json["auxiliar"],
+      tipoTercero: json["auxiliar"],
       clasificacion: json["clasificacion"],
       descClasificacion: json["descClasificacion"],
       tipo: json["tipo"],
@@ -142,7 +142,7 @@ class Auxiliar with ChangeNotifier{
     "descClasificacion": descClasificacion,
     "tipo": tipo,
     "descTipo": descTipo,
-    "auxiliar": auxiliar,
+    "auxiliar": tipoTercero,
     "identificacion": identificacion,
     "primerNombre": primerNombre,
     "segundoNombre": segundoNombre,
@@ -388,8 +388,6 @@ class Clasificacion {
   }
 }
 
-/*
-
 class Agencia {
   // fixCombo (16 feb 2019): Nueva clase para el combo
 
@@ -433,7 +431,7 @@ class Agencia {
     this._parametro0 = map['parametro0'];
   }
 }
-*/
+
 
 class PuntoVenta {
   // fixCombo (16 feb 2019): Nueva clase para el combo

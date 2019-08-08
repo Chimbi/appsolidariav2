@@ -5,6 +5,7 @@ import 'package:appsolidariav2/model/polizaModel.dart';
 import 'package:appsolidariav2/model/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -90,6 +91,14 @@ class Page1 extends StatefulWidget {
 }
 
 class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
+
+  //Se crea la instancia
+  final FirebaseDatabase database = FirebaseDatabase.instance;
+  DatabaseReference terceroRef;
+  DatabaseReference afianzadoRef;
+  DatabaseReference contratanteRef;
+  DatabaseReference rootRef;
+
   String tipoPolizaValue;
   String tipoNegocioValue;
   Clausulado clausuladoValue;
@@ -128,6 +137,10 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
     "Obra",
     "Suministro Repuestos",
   ];
+
+  List<String> afianzados = List();
+  List<String> contratantes = List();
+
 
   bool loading = true;
   final _user = User();
@@ -169,6 +182,17 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
     minDate = DateTime(
         _fechaEmision.year, _fechaEmision.month - 5, _fechaEmision.day);
     periodoController.text = "1";
+
+    //Inicializar referencias de RealTimeDatabase firebase
+    terceroRef = database.reference().child("terceros");
+    afianzadoRef = database.reference().child("terceros").child("Afianzado");
+    contratanteRef = database.reference().child("terceros").child("Contratante");
+    rootRef = database.reference();
+
+    //Initialize the list of Afianzados from Firebase /auxCont/keys
+    afianzadoRef.onChildAdded.listen(_onAddedAfianzado);
+    afianzadoRef.onChildAdded.listen(_onAddedContratante);
+
     super.initState();
   }
 
@@ -237,52 +261,6 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
                     ),
             ),
           ),
-          /*
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: DateTimePickerFormField(
-              decoration: InputDecoration(icon: Icon(Icons.date_range),labelText: 'Vigencia Desde /From'),
-              controller: initialDate,
-              format: dateFormat,
-              enabled: true,
-              dateOnly: true,
-              validator: (value) {
-                if (value == null) {
-                  return 'Debe ingresar una fecha inicial valida';
-                } else if (minDate.isAfter(value)) {
-                  return 'Retroactividad máxima superada';
-                }
-                return null;
-              },
-              onChanged: (DateTime date) {
-                setState(() {
-                  _fromDate1 = date;
-                  //initialDate.text = date.toString();
-                  //finalDate is the controller for the next date
-                  finalDate.text = initialDate.text != "" ? initialDate.text.substring(0, 2) + "-" +
-                          initialDate.text.substring(3, 5) +
-                          "-" +
-                          (int.parse(initialDate.text.substring(6, 10)) +
-                                  int.parse(periodoController.text))
-                              .toString()
-                      : "";
-                  print("initialDate: ${initialDate.text}");
-                  polizaObj.vigDesde = initialDate.text;
-                  //polizaObj.notifyListeners();
-                });
-              },
-              /*
-              Modificado 6 Agosto
-              onFieldSubmitted: (DateTime date) {
-                setState(() {
-                  _fromDate1 = date;
-                  polizaObj.vigDesde = date.toString();
-                });
-              },
-              */
-            ),
-          ),
-          */
           DateTimeField(
             format: dateFormat,
             controller: initialDate,
@@ -459,56 +437,6 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
           SizedBox(
             height: 30,
           ),
-          /*
-          Center(
-              child: Text(
-            "Datos del contrato",
-            style: TextStyle(fontSize: 16.0, color: Colors.blue),
-          )),
-          TextFormField(
-            controller: periodoController,
-            decoration: InputDecoration(
-                labelText: 'Period /Período en años',
-                icon: Icon(Icons.access_time)),
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Período inválido';
-              }
-            },
-            onSaved: (val) =>
-                setState(() => userObj.periodo = int.parse(val)),
-          ),
-          DateTimePickerFormField(
-            onSaved: (value) => print("Voy a hacer algo despues"),
-            decoration: InputDecoration(labelText: 'Fecha final /To'),
-            //firstDate: _fromDate1,
-            controller: finalDate,
-            initialDate: (_fromDate1 != null && periodoController.text != "")
-                ? DateTime(
-                    _fromDate1.year + int.parse(periodoController.text),
-                    _fromDate1.month,
-                    _fromDate1.day)
-                : DateTime.now(),
-            initialValue: (finalDate.text != "" &&
-                    periodoController.text != "")
-                ? DateTime.parse((int.parse(finalDate.text.substring(6, 10)) +
-                            int.parse(periodoController.text))
-                        .toString() +
-                    finalDate.text.substring(3, 5) +
-                    finalDate.text.substring(0, 2))
-                : DateTime.now(),
-            format: dateFormat,
-            enabled: true,
-            dateOnly: true,
-            validator: (value) {
-              if (value == null) {
-                return 'Debe ingresar una fecha valida de contrato';
-              } else if (minDate.isAfter(value)) {
-                return 'Retroactividad máxima superada';
-              }
-            },
-          )
-          */
         ],
       ),
     );
@@ -521,4 +449,20 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
   Future<DocumentSnapshot> getAmparos(String newValue) async {
     return Firestore.instance.collection("tipoNeg").document("$newValue").get();
   }
+
+  _onAddedAfianzado(Event event) {
+    setState(() {
+      afianzados.add(event.snapshot.key);
+      print("Add Afianzado: ${event.snapshot.key}");
+    });
+  }
+
+  _onAddedContratante(Event event) {
+    setState(() {
+      contratantes.add(event.snapshot.key);
+      print("Add Contratante: ${event.snapshot.key}");
+    });
+  }
+
+
 }
