@@ -84,7 +84,7 @@ class PaginaInicio extends StatelessWidget {
                           )),
                     );
                   } else
-                    print("null");
+                    return null;
                 }).toList(),
               ),
             ),

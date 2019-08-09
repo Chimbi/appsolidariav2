@@ -94,6 +94,7 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
   var _tercero = null;
 
   Auxiliar auxObj = Auxiliar();
+  AuxBasico auxBasicoObj = AuxBasico();
 
   //---AutoComplete variables
 
@@ -107,6 +108,7 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
   final FirebaseDatabase database = FirebaseDatabase.instance;
   DatabaseReference ubicacionRef;
   DatabaseReference terceroRef;
+  DatabaseReference terceroBasicoRef;
   DatabaseReference rootRef;
 
   var birthDateTEC = TextEditingController();
@@ -131,6 +133,7 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
 
   Ubicacion selectedPlace;
 
+
   @override
   void initState() {
     initializeDateFormatting();
@@ -139,6 +142,7 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
     ubicacionRef = database.reference().child("ubicacion");
 
     terceroRef = database.reference().child("terceros");
+    terceroBasicoRef = database.reference().child("terceroBasico");
 
     //Root ref
     rootRef = database.reference();
@@ -191,6 +195,7 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
               },
               onSaved: (val) => setState(() {
                 auxObj.primerNombre = val;
+                auxBasicoObj.primerNombre = val;
               }),
             ),
           ),
@@ -384,6 +389,7 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
             },
             onSaved: (val) => setState(() {
               auxObj.identificacion = int.parse(val);
+              auxBasicoObj.identificacion = int.parse(val);
             }),
           ),
         ),
@@ -436,6 +442,7 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
             },
             onSaved: (val) => setState(() {
               auxObj.primerApellido = val;
+              auxBasicoObj.primerApellido = val;
             }),
           ),
         ),
@@ -474,54 +481,57 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
             }),
           ),
         ),
-        SimpleAutocompleteFormField<Ubicacion>(
-          controller: _ubicacion,
-          decoration: InputDecoration(
-              labelText: 'Ciudad/Municipio', icon: Icon(Icons.search)),
-          suggestionsHeight: 120.0,
-          itemBuilder: (context, ubicacion) => Padding(
-            padding: EdgeInsets.all(8.0),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(ubicacion.municipio,
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              Text(ubicacion.departamento),
-              Text(ubicacion.region)
-            ]),
-          ),
-          onSearch: (search) async => ubicaciones
-              .where((ubicacion) =>
-                  ubicacion.municipio
-                      .toLowerCase()
-                      .contains(search.toLowerCase()) ||
-                  ubicacion.departamento
-                      .toLowerCase()
-                      .contains(search.toLowerCase()) ||
-                  ubicacion.region.toLowerCase().contains(search.toLowerCase()))
-              .toList(),
-          itemFromString: (string) => ubicaciones.singleWhere(
-              (ubicacion) =>
-                  ubicacion.municipio.toLowerCase() == string.toLowerCase(),
-              orElse: () => null),
-          onChanged: (value) {
-            setState(() {
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SimpleAutocompleteFormField<Ubicacion>(
+            controller: _ubicacion,
+            decoration: InputDecoration(
+                labelText: 'Ciudad/Municipio', icon: Icon(Icons.search)),
+            suggestionsHeight: 120.0,
+            itemBuilder: (context, ubicacion) => Padding(
+              padding: EdgeInsets.all(8.0),
+              child:
+                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(ubicacion.municipio,
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(ubicacion.departamento),
+                Text(ubicacion.region)
+              ]),
+            ),
+            onSearch: (search) async => ubicaciones
+                .where((ubicacion) =>
+                    ubicacion.municipio
+                        .toLowerCase()
+                        .contains(search.toLowerCase()) ||
+                    ubicacion.departamento
+                        .toLowerCase()
+                        .contains(search.toLowerCase()) ||
+                    ubicacion.region.toLowerCase().contains(search.toLowerCase()))
+                .toList(),
+            itemFromString: (string) => ubicaciones.singleWhere(
+                (ubicacion) =>
+                    ubicacion.municipio.toLowerCase() == string.toLowerCase(),
+                orElse: () => null),
+            onChanged: (value) {
+              setState(() {
+                selectedPlace = value;
+                if (value != null) {
+                  _ubicacion.text = value.municipio;
+                  print(
+                      "Selected ubicacion departamento: ${auxObj.departamento},municipio: ${auxObj.municipio}");
+                }
+              });
+            },
+            onSaved: (value) => setState(() {
               selectedPlace = value;
-              if (value != null) {
-                _ubicacion.text = value.municipio;
-                print(
-                    "Selected ubicacion departamento: ${auxObj.departamento},municipio: ${auxObj.municipio}");
-              }
-            });
-          },
-          onSaved: (value) => setState(() {
-            selectedPlace = value;
-            auxObj.municipio = value.municipio;
-            auxObj.departamento = value.departamento;
-            auxObj.c_digo_dane_del_municipio = int.parse(value.c_digo_dane_del_municipio);
-            auxObj.c_digo_dane_del_departamento = int.parse(value.c_digo_dane_del_departamento);
-          }),
-          autofocus: false,
-          validator: (user) => user == null ? 'Campo obligatorio.' : null,
+              auxObj.municipio = value.municipio;
+              auxObj.departamento = value.departamento;
+              //auxObj.c_digo_dane_del_municipio = int.parse(value.c_digo_dane_del_municipio);
+              //auxObj.c_digo_dane_del_departamento = int.parse(value.c_digo_dane_del_departamento);
+            }),
+            autofocus: false,
+            validator: (user) => user == null ? 'Campo obligatorio.' : null,
+          ),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -804,7 +814,40 @@ class _AuxiliarPageState extends State<AuxiliarPage> {
             //Firestore.instance.collection("terceros").add({"Chao":"Andy"});
             //Firestore.instance.document("terceros/${auxObj.identificacion}").setData(auxObj.toMap());
             terceroRef.child("${auxObj.tipoTercero}").child("${auxObj.identificacion}").set(auxObj.toMap());
-            print("OnPressed FloatingActionButton");
+            terceroBasicoRef.child("${auxObj.tipoTercero}").child("${auxObj.identificacion}").set(auxBasicoObj.toMap());
+            showDialog<void>(
+              context: context,
+              barrierDismissible: false, // user must tap button!
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Tercero creado exitosamente!!'),
+                  content: SingleChildScrollView(
+                    child: ListBody(
+                      children: <Widget>[
+                        Text(
+                            'El ${auxObj.tipoTercero} ${auxObj.primerNombre != null ? auxObj.primerNombre : ""} ${auxObj.segundoApellido}'),
+                        Text('con identificación ${auxObj.identificacion} ha sido creado exitosamente'),
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('Aceptar'),
+                      onPressed: () {
+                        //Navigator.of(context).pop();
+                        Navigator.pushNamed(context, '/');
+                      },
+                    ),
+                    FlatButton(
+                      child: Text('Nueva Póliza'),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/poliza');
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
           } else {
             showDialog<void>(
               context: context,

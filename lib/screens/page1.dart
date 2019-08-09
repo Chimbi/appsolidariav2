@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:appsolidariav2/model/amparoModel.dart';
+import 'package:appsolidariav2/model/auxiliarModel.dart';
 import 'package:appsolidariav2/model/polizaModel.dart';
 import 'package:appsolidariav2/model/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -28,48 +29,225 @@ class Page0 extends StatefulWidget {
 }
 
 class _Page0State extends State<Page0> with AutomaticKeepAliveClientMixin {
+  TextEditingController auxBasicoController = TextEditingController();
+  TextEditingController asegBasicoController = TextEditingController();
+
+  List<AuxBasico> afianzados = List();
+  List<AuxBasico> contratantes = List();
+
+  AuxBasico selectedAuxBasico;
+  AuxBasico selectedAsegBasico;
+
+  AuxBasico auxObj;
+
+  //Se crea la instancia
+  final FirebaseDatabase database = FirebaseDatabase.instance;
+  DatabaseReference terceroRef;
+  DatabaseReference afianzadoRef;
+  DatabaseReference contratanteRef;
+  DatabaseReference afianzadoBasicoRef;
+  DatabaseReference contratanteBasicoRef;
+  DatabaseReference rootRef;
+
+  var loading = true;
+  bool _isSelected = false;
+
+  @override
+  void initState() {
+    //Inicializar objeto
+    auxObj = AuxBasico();
+
+    //Inicializar referencias de RealTimeDatabase firebase
+    terceroRef = database.reference().child("terceros");
+    afianzadoRef = database.reference().child("terceros").child("Afianzado");
+    afianzadoBasicoRef =
+        database.reference().child("terceroBasico").child("Afianzado");
+    contratanteBasicoRef =
+        database.reference().child("terceroBasico").child("Contratante");
+    rootRef = database.reference();
+
+    //Initialize the list of Afianzados from Firebase /auxCont/keys
+    afianzadoBasicoRef.onChildAdded
+        .listen(_onAddedAfianzado)
+        .onDone(loadingFunc());
+    contratanteBasicoRef.onChildAdded.listen(_onAddedContratante);
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text("Favor ingresar las partes involucradas"),
-        ),
         Card(
           elevation: 8.0,
           child: Column(
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: TextFormField(
-                  decoration: InputDecoration(labelText: 'City'),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'City is required!';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    print("Onsave Called for City");
-                  },
-                ),
+              CheckboxListTile(
+                value: _isSelected,
+                title: Text("Asegurado = Beneficiario"),
+                onChanged: (bool newValue) {
+                  setState(() {
+                    _isSelected = newValue;
+                  });
+                },
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: TextFormField(
-                  decoration: InputDecoration(labelText: 'Country'),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Country is required!';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    print("Onsave Called for Country");
-                  },
+              loading
+                  ? CircularProgressIndicator()
+                  : SimpleAutocompleteFormField<AuxBasico>(
+                      controller: auxBasicoController,
+                      decoration: InputDecoration(
+                          labelText: 'Afianzado', icon: Icon(Icons.search)),
+                      suggestionsHeight: 120.0,
+                      itemBuilder: (context, auxbasico) => Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(auxbasico.primerApellido,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(auxbasico.identificacion.toString())
+                            ]),
+                      ),
+                      //Bug solved.
+                      //Can't search for primerNombre because Nit don't have primerNombre
+                      onSearch: (search) async => afianzados
+                          .where((aux) =>
+                              aux.primerApellido
+                                  .toLowerCase()
+                                  .contains(search.toLowerCase()) ||
+                              aux.identificacion.toString().contains(search))
+                          .toList(),
+                      itemFromString: (string) => afianzados.singleWhere(
+                          (auxbasico) =>
+                              auxbasico.primerApellido.toLowerCase() ==
+                              string.toLowerCase(),
+                          orElse: () => null),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedAuxBasico = value;
+                          if (value != null) {
+                            auxBasicoController.text = value.primerApellido;
+                            //print("Selected ubicacion departamento: ${auxObj.departamento},municipio: ${auxObj.municipio}");
+                          }
+                        });
+                      },
+                      onSaved: (value) => setState(() {
+                        selectedAuxBasico = value;
+                        //auxObj.municipio = value.municipio;
+                        //auxObj.departamento = value.departamento;
+                        //auxObj.c_digo_dane_del_municipio = int.parse(value.c_digo_dane_del_municipio);
+                        //auxObj.c_digo_dane_del_departamento = int.parse(value.c_digo_dane_del_departamento);
+                      }),
+                      autofocus: false,
+                      validator: (user) =>
+                          user == null ? 'Campo obligatorio.' : null,
+                    ),
+              loading
+                  ? CircularProgressIndicator()
+                  : SimpleAutocompleteFormField<AuxBasico>(
+                      controller: asegBasicoController,
+                      decoration: InputDecoration(
+                          labelText: 'Tomador/Asegurado', icon: Icon(Icons.search)),
+                      suggestionsHeight: 120.0,
+                      itemBuilder: (context, auxbasico) => Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(auxbasico.primerApellido,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(auxbasico.identificacion.toString())
+                            ]),
+                      ),
+                      //Bug solved.
+                      //Can't search for primerNombre because Nit don't have primerNombre
+                      onSearch: (search) async => contratantes
+                          .where((aux) =>
+                              aux.primerApellido
+                                  .toLowerCase()
+                                  .contains(search.toLowerCase()) ||
+                              aux.identificacion.toString().contains(search))
+                          .toList(),
+                      itemFromString: (string) => contratantes.singleWhere(
+                          (auxbasico) =>
+                              auxbasico.primerApellido.toLowerCase() ==
+                              string.toLowerCase(),
+                          orElse: () => null),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedAsegBasico = value;
+                          if (value != null) {
+                            auxBasicoController.text = value.primerApellido;
+                            //print("Selected ubicacion departamento: ${auxObj.departamento},municipio: ${auxObj.municipio}");
+                          }
+                        });
+                      },
+                      onSaved: (value) => setState(() {
+                        selectedAsegBasico = value;
+                        //auxObj.municipio = value.municipio;
+                        //auxObj.departamento = value.departamento;
+                        //auxObj.c_digo_dane_del_municipio = int.parse(value.c_digo_dane_del_municipio);
+                        //auxObj.c_digo_dane_del_departamento = int.parse(value.c_digo_dane_del_departamento);
+                      }),
+                      autofocus: false,
+                      validator: (user) =>
+                          user == null ? 'Campo obligatorio.' : null,
+                    ),
+              _isSelected == false ? loading
+                  ? CircularProgressIndicator()
+                  : SimpleAutocompleteFormField<AuxBasico>(
+                controller: asegBasicoController,
+                decoration: InputDecoration(
+                    labelText: 'Beneficiario', icon: Icon(Icons.search)),
+                suggestionsHeight: 120.0,
+                itemBuilder: (context, auxbasico) => Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(auxbasico.primerApellido,
+                            style:
+                            TextStyle(fontWeight: FontWeight.bold)),
+                        Text(auxbasico.identificacion.toString())
+                      ]),
                 ),
-              ),
+                //Bug solved.
+                //Can't search for primerNombre because Nit don't have primerNombre
+                onSearch: (search) async => contratantes
+                    .where((aux) =>
+                aux.primerApellido
+                    .toLowerCase()
+                    .contains(search.toLowerCase()) ||
+                    aux.identificacion.toString().contains(search))
+                    .toList(),
+                itemFromString: (string) => contratantes.singleWhere(
+                        (auxbasico) =>
+                    auxbasico.primerApellido.toLowerCase() ==
+                        string.toLowerCase(),
+                    orElse: () => null),
+                onChanged: (value) {
+                  setState(() {
+                    selectedAsegBasico = value;
+                    if (value != null) {
+                      auxBasicoController.text = value.primerApellido;
+                      //print("Selected ubicacion departamento: ${auxObj.departamento},municipio: ${auxObj.municipio}");
+                    }
+                  });
+                },
+                onSaved: (value) => setState(() {
+                  selectedAsegBasico = value;
+                  //auxObj.municipio = value.municipio;
+                  //auxObj.departamento = value.departamento;
+                  //auxObj.c_digo_dane_del_municipio = int.parse(value.c_digo_dane_del_municipio);
+                  //auxObj.c_digo_dane_del_departamento = int.parse(value.c_digo_dane_del_departamento);
+                }),
+                autofocus: false,
+                validator: (user) =>
+                user == null ? 'Campo obligatorio.' : null,
+              ) : Container(),
               SizedBox(
                 height: 30,
               ),
@@ -83,6 +261,26 @@ class _Page0State extends State<Page0> with AutomaticKeepAliveClientMixin {
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
+
+  _onAddedAfianzado(Event event) {
+    setState(() {
+      afianzados.add(AuxBasico.fromMapObject(
+          event.snapshot.value.cast<String, dynamic>()));
+      print("Add ${event.snapshot.key}");
+    });
+  }
+
+  _onAddedContratante(Event event) {
+    setState(() {
+      contratantes.add(AuxBasico.fromMapObject(
+          event.snapshot.value.cast<String, dynamic>()));
+      print("Add ${event.snapshot.key}");
+    });
+  }
+
+  void Function() loadingFunc() {
+    loading = false;
+  }
 }
 
 class Page1 extends StatefulWidget {
@@ -91,7 +289,6 @@ class Page1 extends StatefulWidget {
 }
 
 class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
-
   //Se crea la instancia
   final FirebaseDatabase database = FirebaseDatabase.instance;
   DatabaseReference terceroRef;
@@ -138,10 +335,6 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
     "Suministro Repuestos",
   ];
 
-  List<String> afianzados = List();
-  List<String> contratantes = List();
-
-
   bool loading = true;
   final _user = User();
   final _poliza = Poliza();
@@ -186,12 +379,9 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
     //Inicializar referencias de RealTimeDatabase firebase
     terceroRef = database.reference().child("terceros");
     afianzadoRef = database.reference().child("terceros").child("Afianzado");
-    contratanteRef = database.reference().child("terceros").child("Contratante");
+    contratanteRef =
+        database.reference().child("terceros").child("Contratante");
     rootRef = database.reference();
-
-    //Initialize the list of Afianzados from Firebase /auxCont/keys
-    afianzadoRef.onChildAdded.listen(_onAddedAfianzado);
-    afianzadoRef.onChildAdded.listen(_onAddedContratante);
 
     super.initState();
   }
@@ -209,58 +399,6 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
             "Datos Básicos",
             style: TextStyle(fontSize: 16.0, color: Colors.blue),
           )),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: loading
-                  ? CircularProgressIndicator()
-                  : SimpleAutocompleteFormField<User>(
-                      decoration: InputDecoration(
-                          labelText: 'User/ Afianzado',
-                          icon: Icon(Icons.person)),
-                      suggestionsHeight: 80.0,
-                      itemBuilder: (context, user) => Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(user.name,
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                              Text(user.email)
-                            ]),
-                      ),
-                      onSearch: (search) async => users
-                          .where((user) =>
-                              user.name
-                                  .toLowerCase()
-                                  .contains(search.toLowerCase()) ||
-                              user.email
-                                  .toLowerCase()
-                                  .contains(search.toLowerCase()))
-                          .toList(),
-                      itemFromString: (string) => users.singleWhere(
-                          (user) =>
-                              user.name.toLowerCase() == string.toLowerCase(),
-                          orElse: () => null),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedUser = value;
-                          if (value != null) {
-                            cupoController.text = value.email;
-                          }
-                        });
-                      },
-                      onSaved: (value) => setState(() {
-                        selectedUser = value;
-                        polizaObj.apellidoRazonSocial = value.name;
-                        print("Selected user email ${selectedUser.email}");
-                      }),
-                      validator: (user) =>
-                          user == null ? 'El Afianzado no existe.' : null,
-                    ),
-            ),
-          ),
           DateTimeField(
             format: dateFormat,
             controller: initialDate,
@@ -295,22 +433,26 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
               }
               return null;
             },
-            initialValue: (polizaObj.vigDesde != null && polizaObj.vigDesde != "")
-                ? DateTime.parse((polizaObj.vigDesde.substring(6, 10) +
-                    polizaObj.vigDesde.substring(3, 5) +
-                    polizaObj.vigDesde.substring(0, 2)))
-                : null, //TODO Se cambia de "" a null 06 Agosto 2019
+            initialValue:
+                (polizaObj.vigDesde != null && polizaObj.vigDesde != "")
+                    ? DateTime.parse((polizaObj.vigDesde.substring(6, 10) +
+                        polizaObj.vigDesde.substring(3, 5) +
+                        polizaObj.vigDesde.substring(0, 2)))
+                    : null,
+            //TODO Se cambia de "" a null 06 Agosto 2019
             onChanged: (DateTime date) {
               setState(() {
                 //_fromDate1 = date;
                 //initialDate.text = date.toString();
                 //finalDate is the controller for the next date
-                finalDate.text = initialDate.text != "" ? initialDate.text.substring(0, 2) + "-" +
-                    initialDate.text.substring(3, 5) +
-                    "-" +
-                    (int.parse(initialDate.text.substring(6, 10)) +
-                        int.parse(periodoController.text))
-                        .toString()
+                finalDate.text = initialDate.text != ""
+                    ? initialDate.text.substring(0, 2) +
+                        "-" +
+                        initialDate.text.substring(3, 5) +
+                        "-" +
+                        (int.parse(initialDate.text.substring(6, 10)) +
+                                int.parse(periodoController.text))
+                            .toString()
                     : "";
                 print("initialDate: ${initialDate.text}");
                 polizaObj.vigDesde = initialDate.text;
@@ -324,7 +466,9 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
             },
             resetIcon: Icon(Icons.delete),
             readOnly: false,
-            decoration: InputDecoration(icon: Icon(Icons.date_range),labelText: 'Vigencia Desde /From'),
+            decoration: InputDecoration(
+                icon: Icon(Icons.date_range),
+                labelText: 'Vigencia Desde /From'),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -449,20 +593,4 @@ class _Page1State extends State<Page1> with AutomaticKeepAliveClientMixin {
   Future<DocumentSnapshot> getAmparos(String newValue) async {
     return Firestore.instance.collection("tipoNeg").document("$newValue").get();
   }
-
-  _onAddedAfianzado(Event event) {
-    setState(() {
-      afianzados.add(event.snapshot.key);
-      print("Add Afianzado: ${event.snapshot.key}");
-    });
-  }
-
-  _onAddedContratante(Event event) {
-    setState(() {
-      contratantes.add(event.snapshot.key);
-      print("Add Contratante: ${event.snapshot.key}");
-    });
-  }
-
-
 }

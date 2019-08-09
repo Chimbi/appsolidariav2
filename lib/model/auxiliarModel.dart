@@ -176,6 +176,36 @@ class Auxiliar with ChangeNotifier{
   };
 }
 
+class AuxBasico {
+  String primerNombre;
+  String primerApellido;
+  int identificacion;
+
+  AuxBasico({this.primerNombre, this.primerApellido, this.identificacion});
+
+  //This function is to convert Genero Object to Map Object for database
+  Map<String, dynamic> toMap() {
+    var map = Map<String, dynamic>();
+    map['primerNombre'] = primerNombre;
+    map['primerApellido'] = primerApellido;
+    map['identificacion'] = identificacion;
+    return map;
+  }
+
+  AuxBasico.fromMapObject(Map<String, dynamic> map) {
+    this.primerNombre = map['primerNombre'];
+    this.primerApellido = map['primerApellido'];
+    this.identificacion = map['identificacion'];
+  }
+
+  @override
+  String toString() {
+    return '$primerApellido';
+  }
+
+
+}
+
 class Genero {
   // fixCombo (16 feb 2019): Nueva clase para el combo
 
