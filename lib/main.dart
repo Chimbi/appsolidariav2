@@ -1,15 +1,14 @@
 import 'package:appsolidariav2/screens/auxPage.dart';
 import 'package:appsolidariav2/screens/inicio.dart';
+import 'package:appsolidariav2/screens/mlKitPage.dart';
 import 'package:appsolidariav2/screens/pdf/pdfmain.dart';
 import 'package:appsolidariav2/screens/poliza.dart';
-import 'package:appsolidariav2/screens/terceros.dart';
 import 'package:appsolidariav2/screens/temp.dart';
 import 'package:appsolidariav2/theme/style.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'model/polizaModel.dart';
-import 'model/user.dart';
 
 void main() => runApp(MyApp());
 
@@ -30,6 +29,7 @@ class MyApp extends StatelessWidget {
           '/poliza': (context) => PolizaForm(),
           '/terceros': (context) => AuxiliarPage(),
           '/test': (context) => PageSelectorDemo(),
+          '/mlKit': (context) => FirebaseMLKitExample(),
           '/pdfdemo': (context) => PdfDemo(),
 
         },
