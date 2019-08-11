@@ -1,6 +1,5 @@
 import 'package:appsolidariav2/screens/auxPage.dart';
 import 'package:appsolidariav2/screens/inicio.dart';
-import 'package:appsolidariav2/screens/mlKitPage.dart';
 import 'package:appsolidariav2/screens/pdf/pdfmain.dart';
 import 'package:appsolidariav2/screens/poliza.dart';
 import 'package:appsolidariav2/screens/temp.dart';
@@ -29,11 +28,9 @@ class MyApp extends StatelessWidget {
           '/poliza': (context) => PolizaForm(),
           '/terceros': (context) => AuxiliarPage(),
           '/test': (context) => PageSelectorDemo(),
-          '/mlKit': (context) => FirebaseMLKitExample(),
           '/pdfdemo': (context) => PdfDemo(),
 
         },
-
         //home: MyHomePage(title: 'Flutter Demo Home Page'),
         //https://flutter.dev/docs/cookbook/navigation/named-routes
         // "Warning: When using initialRoute, don’t define a home property."

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "696435022099",
+    "firebase_url": "https://appsolidaria.firebaseio.com",
+    "project_id": "appsolidaria",
+    "storage_bucket": "appsolidaria.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:696435022099:android:31ccaf97976e11c1",
+        "android_client_info": {
+          "package_name": "co.com.creece.appsolidariav2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "696435022099-6vgijcgpou0q4lb3265n0bbauli7jgj1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "co.com.creece.appsolidariav2",
+            "certificate_hash": "eefcc7b2a6183612247f6ec641eed08ca8aeb81c"
+          }
+        },
+        {
+          "client_id": "696435022099-o2k9eb2f7iqn37r13s8gbmp4lijtfnbd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWvd8tfSLPsUNeDiRzuX7nQuh6KSF8CM0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "696435022099-o2k9eb2f7iqn37r13s8gbmp4lijtfnbd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "696435022099-aq1fdupo19hq775silbshg92vprkam75.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "dfaasdf"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
